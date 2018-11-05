@@ -8,5 +8,5 @@ External dependencies are listed but may not be entirely provided in this reposi
 - Windows or Linux 64-bits OS.
 - GL 2.0 or OES 2.0 (at least) compatible GPU.
 - GLFW3.
-- GCC / MinGW
-- NASM
+- GCC / MinGW.
+- NASM.
