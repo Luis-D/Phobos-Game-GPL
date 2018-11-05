@@ -54,7 +54,7 @@ int main(void)
 
 
     IQM_RAW_Struct _Modelo_;
-    if(IQM_Load_File(&_Modelo_,"untitled333.iqm") ==-1){printf("no\n");}
+    if(IQM_Load_File(&_Modelo_,"mono.iqm") ==-1){printf("no\n");}
     LD_Model_Object_Struct * Modelo = LD_3D_ModelsLinkedList_Append((&_Modelo_.VertexCount));
      
     IQM_RAW_Struct _Modelo_2;
