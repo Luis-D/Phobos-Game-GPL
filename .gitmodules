@@ -1,1 +1,4 @@
 
+[submodule "libLDCC"]
+	path = libLDCC
+	url = https://github.com/Luis-D/libLDCC
