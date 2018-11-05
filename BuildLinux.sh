@@ -14,3 +14,5 @@ gcc -g main.c LD_Math.o LD_Collision_2D.o LD_OES2_GLFW3.o LD_C_Chrono.o LD_Navi_
 
 mkdir Linux
 mv Phobos-Game.exe Linux/Phobos-Game
+
+#The final executable will depend on GLFW3 shared object for it was dynamically linked
