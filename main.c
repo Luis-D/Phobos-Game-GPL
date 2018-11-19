@@ -52,11 +52,13 @@ int main(void)
 
     LD_3D_init();
 
-    GLuint Shader_DeferredLight_Gbuffer =
-    GL_Shaders_Load_File("Shaders/DeferredLighting/VS_Gbuffer.glsl","Shaders/DeferredLighting/FS_Gbuffer.glsl");
+    extern char _binary_Shaders_DeferredLighting_VS_Gbuffer_glsl_start;
+    extern char _binary_Shaders_DeferredLighting_FS_Gbuffer_glsl_start;
 
-    GLuint Shader_ShadowVol =
-    GL_Shaders_Load_File("Shaders/DeferredLighting/VS_ShadowVol.glsl","Shaders/DeferredLighting/FS_Gbuffer.glsl");
+    GLuint Shader_DeferredLight_Gbuffer =
+    //GL_Shaders_Load_File("Shaders/DeferredLighting/VS_Gbuffer.glsl","Shaders/DeferredLighting/FS_Gbuffer.glsl");
+    GL_Shaders_Load_Strings(&_binary_Shaders_DeferredLighting_VS_Gbuffer_glsl_start,
+    &_binary_Shaders_DeferredLighting_FS_Gbuffer_glsl_start);
 
     int Uniform_Locs_Mat4[]=
     {glGetUniformLocation(Shader_DeferredLight_Gbuffer,"Matrix")};
