@@ -9,7 +9,7 @@ void bail(lua_State *L, char *msg){
 	exit(1);
 }
 
-lua_State * BE_Lua_Thread(lua_State **L)
+lua_State * Lua_Thread(lua_State **L)
 {
     *L = luaL_newstate();                        /* Create Lua state variable */
     luaL_openlibs(*L);                           /* Load Lua libraries */
@@ -17,7 +17,7 @@ lua_State * BE_Lua_Thread(lua_State **L)
     return thread;
 }
 
-int BE_Lua_Execute(lua_State * Lua_State,const char * Script_file_path)
+int Lua_Execute(lua_State * Lua_State,const char * Script_file_path)
 {
     if (luaL_loadfile(Lua_State, Script_file_path))    /* Load but don't run the Lua script */
     {bail(Lua_State, "luaL_loadfile() failed");}      /* Error out if file can't be read */
@@ -27,4 +27,17 @@ int BE_Lua_Execute(lua_State * Lua_State,const char * Script_file_path)
     return lua_resume(Lua_State, 0);
 }
 
-void BE_Lua_Close(lua_State * L){lua_close(L);}
+void Lua_Close(lua_State * L){lua_close(L);}
+
+int l_Pho_Camera_add(lua_State * L)
+{
+    Pho_Camera_add(lua_tonumber(L,1),lua_tonumber(L,2),lua_tonumber(L,3),
+    lua_tonumber(L,4),lua_tonumber(L,5),lua_tonumber(L,6),lua_tonumber(L,7),
+    lua_tonumber(L,8));
+    return 1;
+}
+
+void Lua_add_registers(lua_State * L)
+{
+    lua_register(L,"Camera_add",l_Pho_Camera_add);
+}

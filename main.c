@@ -83,10 +83,16 @@ int main(void)
     ProjectionMatrices_init(60,Aspect,
     1.f,1000.f);
    
+    lua_State * K;
+    lua_State * L = Lua_Thread(&K);
+    Lua_add_registers(L);
+    Lua_Execute(L,"Camconf.lua");
+
+/*
     Pho_Camera_add(0,-2,10,0,0,0,50,5);
     Pho_Camera_add(8,-5,3,4,0,0,90,4);
     Pho_Camera_add(8,-5,3,12,0,0,90,4);
-
+*/
 
     _Entities_LL_ * tmpplayer = Entity_Create(0,0,0,0.30,10,0.25);
     Entity_set_Model_Instance(tmpplayer,&LD_3D.InstacesBuffer[0]);
