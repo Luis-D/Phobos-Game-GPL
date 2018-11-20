@@ -56,7 +56,6 @@ int main(void)
     extern char _binary_Shaders_DeferredLighting_FS_Gbuffer_glsl_start;
 
     GLuint Shader_DeferredLight_Gbuffer =
-    //GL_Shaders_Load_File("Shaders/DeferredLighting/VS_Gbuffer.glsl","Shaders/DeferredLighting/FS_Gbuffer.glsl");
     GL_Shaders_Load_Strings(&_binary_Shaders_DeferredLighting_VS_Gbuffer_glsl_start,
     &_binary_Shaders_DeferredLighting_FS_Gbuffer_glsl_start);
 
@@ -73,35 +72,9 @@ int main(void)
 
 
 printf("Script done.\n");
-/*
-     IQM_RAW_Struct _Modelo_;
-    if(IQM_Load_File(&_Modelo_,"mono.iqm") ==-1){printf("no\n");}
-    LD_Model_Object_Struct * Modelo = LD_3D_ModelsLinkedList_Append((&_Modelo_.VertexCount));
-     
-    IQM_RAW_Struct _Modelo_2;
-    if(IQM_Load_File(&_Modelo_2,"test1.iqm") ==-1){printf("no\n");}
-    LD_Model_Object_Struct * Modelo2 = LD_3D_ModelsLinkedList_Append((&_Modelo_2.VertexCount));
+    
 
-    LD_3D_Fill_Instance(&LD_3D.InstacesBuffer[0],Modelo);
-    LD_3D_Fill_Instance(&LD_3D.InstacesBuffer[1],Modelo2);
-*/
-
-//	printf("Modelo: %x\n",&LD_3D.ModelsLinkedList_First->Model);
-
-//	LD_3D_Fill_Instance(LD_3D.InstacesBuffer,&LD_3D.ModelsLinkedList_First->Model);
-
-//  LD_3D_Fill_VRAMBuffer(LD_3D.VRAMBuffer,&LD_3D.InstacesBuffer[0],&LD_3D.InstacesBuffer[0],0);
-  
-  //  LD_3D_Fill_VRAMBuffer(LD_3D.VRAMBuffer+1,&LD_3D.InstacesBuffer[1],&LD_3D.InstacesBuffer[1],0);
-
-
-/*
-    Pho_Camera_add(0,-2,10,0,0,0,50,5);
-    Pho_Camera_add(8,-5,3,4,0,0,90,4);
-    Pho_Camera_add(8,-5,3,12,0,0,90,4);
-*/
-
-    _Entities_LL_ * tmpplayer = Entity_Create(0,0,0,0.30,10,0.25);
+_Entities_LL_ * tmpplayer = Entity_Create(0,0,0,0.30,10,0.25);
     Entity_set_Model_Instance(tmpplayer,&LD_3D.InstacesBuffer[0]);
 
     struct Chara * player = &Entities_Sys.Entities_LL_First->Entity;
