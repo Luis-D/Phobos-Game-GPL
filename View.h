@@ -51,7 +51,7 @@ float ProjectionViewMatrix[32]; //First half is for Perspective, second half is 
 
 void ProjectionMatrices_init(float FOV,float ASPECT, float NEAR, float FAR)
 {
-    OrthogonalProjectionMatrix4x4(ProjectionMatrix+16,1.f,1.f,10,100); 
+    OrthogonalProjectionMatrix4x4(ProjectionMatrix+16,ASPECT,1.f,NEAR,FAR); 
     PerspectiveProjectionMatrix4x4(ProjectionMatrix,FOV,ASPECT,NEAR,FAR);
 
     for(int i =0;i<16;i+=4)
