@@ -57,7 +57,8 @@ void ProjectionMatrices_init(float FOV,float ASPECT, float NEAR, float FAR)
     for(int i =0;i<16;i+=4)
     {
     printf("%f, %f, %f, %f \n",(ProjectionMatrix+16)[0+i],(ProjectionMatrix+16)[1+i],(ProjectionMatrix+16)[2+i],(ProjectionMatrix+16)[3+i]);
-*/	}
+	}
+*/
 }
 
 void ProjectionViewMatrix_Ortho_Update()
