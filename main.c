@@ -62,8 +62,19 @@ int main(void)
 
     int Uniform_Locs_Mat4[]=
     {glGetUniformLocation(Shader_DeferredLight_Gbuffer,"Matrix")};
+    Pho_Camera_init();
+    
+    ProjectionMatrices_init(60,Aspect,
+    1.f,1000.f);
+   
+    lua_State * L = Lua_State_Init();
+    Lua_add_registers(L);
+    Lua_Execute(L,"script.lua");
 
-    IQM_RAW_Struct _Modelo_;
+
+printf("Script done.\n");
+/*
+     IQM_RAW_Struct _Modelo_;
     if(IQM_Load_File(&_Modelo_,"mono.iqm") ==-1){printf("no\n");}
     LD_Model_Object_Struct * Modelo = LD_3D_ModelsLinkedList_Append((&_Modelo_.VertexCount));
      
@@ -71,24 +82,18 @@ int main(void)
     if(IQM_Load_File(&_Modelo_2,"test1.iqm") ==-1){printf("no\n");}
     LD_Model_Object_Struct * Modelo2 = LD_3D_ModelsLinkedList_Append((&_Modelo_2.VertexCount));
 
-    LD_3D_InstaceBuffer_Set_capacity(3);
-    LD_3D_VRAMBuffer_allocate(2);
-
     LD_3D_Fill_Instance(&LD_3D.InstacesBuffer[0],Modelo);
     LD_3D_Fill_Instance(&LD_3D.InstacesBuffer[1],Modelo2);
+*/
 
-    LD_3D_Fill_VRAMBuffer(LD_3D.VRAMBuffer,&LD_3D.InstacesBuffer[0],&LD_3D.InstacesBuffer[0],0);
-    LD_3D_Fill_VRAMBuffer(LD_3D.VRAMBuffer+1,&LD_3D.InstacesBuffer[1],&LD_3D.InstacesBuffer[1],0);
+//	printf("Modelo: %x\n",&LD_3D.ModelsLinkedList_First->Model);
 
-    Pho_Camera_init();
-    
-    ProjectionMatrices_init(60,Aspect,
-    1.f,1000.f);
-   
-    lua_State * K;
-    lua_State * L = Lua_Thread(&K);
-    Lua_add_registers(L);
-    Lua_Execute(L,"Camconf.lua");
+//	LD_3D_Fill_Instance(LD_3D.InstacesBuffer,&LD_3D.ModelsLinkedList_First->Model);
+
+//  LD_3D_Fill_VRAMBuffer(LD_3D.VRAMBuffer,&LD_3D.InstacesBuffer[0],&LD_3D.InstacesBuffer[0],0);
+  
+  //  LD_3D_Fill_VRAMBuffer(LD_3D.VRAMBuffer+1,&LD_3D.InstacesBuffer[1],&LD_3D.InstacesBuffer[1],0);
+
 
 /*
     Pho_Camera_add(0,-2,10,0,0,0,50,5);
