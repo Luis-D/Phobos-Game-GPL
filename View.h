@@ -42,7 +42,7 @@ float DegreesV2V2(float * A, float * B)
 
 
 /*** Global Matrices ***/
-float ProjectionMatrix[35]; //First half is Perspective, second half is Orthogonal
+float ProjectionMatrix[32]; //First half is Perspective, second half is Orthogonal
 float ViewMatrix[32];       //First half is for Perspective, second half is for Orthogonal
 
  // Projection * View
@@ -51,8 +51,13 @@ float ProjectionViewMatrix[32]; //First half is for Perspective, second half is 
 
 void ProjectionMatrices_init(float FOV,float ASPECT, float NEAR, float FAR)
 {
-    OrthogonalProjectionMatrix4x4(ProjectionMatrix+16,ASPECT,1.f,NEAR,FAR); //<-check ASM
+    OrthogonalProjectionMatrix4x4(ProjectionMatrix+16,1.f,1.f,10,100); 
     PerspectiveProjectionMatrix4x4(ProjectionMatrix,FOV,ASPECT,NEAR,FAR);
+
+    for(int i =0;i<16;i+=4)
+    {
+    printf("%f, %f, %f, %f \n",(ProjectionMatrix+16)[0+i],(ProjectionMatrix+16)[1+i],(ProjectionMatrix+16)[2+i],(ProjectionMatrix+16)[3+i]);
+	}
 }
 
 void ProjectionViewMatrix_Ortho_Update()
