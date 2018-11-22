@@ -16,7 +16,7 @@
     float DegreesV2V2(float * A, float * B) needs ASM implementation
 */
 
-
+/*
 float DistanceV2(float * A, float * B)
 {
     float XMM0[2]; float XMM1[2]; 
@@ -39,6 +39,7 @@ float DegreesV2V2(float * A, float * B)
 
     return DegreesV2(XMM1);
 }
+*/
 
 
 /*** Global Matrices ***/
@@ -133,7 +134,7 @@ float To_X,float To_Y,float To_Z,float FieldOfView,float DistanceOfView)
     tmpcam->view.Up.y = 0.f;
     tmpcam->view.Up.z = 1.f;
 
-    tmpcam->DegreeAngle= DegreesV2V2(&tmpcam->view.From.x,&tmpcam->view.To.x);
+    V2DegreesV2_FPU(&tmpcam->view.From.x,&tmpcam->view.To.x,&tmpcam->DegreeAngle);
 
     return tmpcam;
 }
@@ -152,9 +153,9 @@ void Pho_Camera_Update(float x, float y)
     {
         struct Pho_Camera * First_Cam = Camera_System.Current_Camera;
             char In_Distance = 
-            (DistanceV2(Pos,&First_Cam->view.From.x) <= First_Cam->DistanceOfView);
+            (V2Distance(Pos,&First_Cam->view.From.x) <= First_Cam->DistanceOfView);
 
-            float Ang = DegreesV2V2(&First_Cam->view.From.x,Pos);
+            float Ang; V2DegreesV2_FPU(&First_Cam->view.From.x,Pos,&Ang);
             char In_FOV =  
             (180.f - abs(abs(First_Cam->DegreeAngle - Ang) - 180.f) <= (First_Cam->FieldOfView*0.5));
             if(!In_Distance || !In_FOV)
@@ -171,9 +172,9 @@ void Pho_Camera_Update(float x, float y)
         for (;First_Cam<PostLast_Cam;First_Cam++)
         {
             char In_Distance = 
-            (DistanceV2(Pos,&First_Cam->view.From.x) <= First_Cam->DistanceOfView);
+            (V2Distance(Pos,&First_Cam->view.From.x) <= First_Cam->DistanceOfView);
 
-            float Ang = DegreesV2V2(&First_Cam->view.From.x,Pos);
+            float Ang; V2DegreesV2_FPU(&First_Cam->view.From.x,Pos,&Ang);
             char In_FOV =  
             (180.f - abs(abs(First_Cam->DegreeAngle - Ang) - 180.f) <= (First_Cam->FieldOfView*0.5));
 
