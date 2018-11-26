@@ -69,15 +69,14 @@ int main(void)
 
 printf("Script done.\n");
     
+    //Entity_Create(0,0,0,0.30,10,0.25);
 
      STL_Mesh_NoNormals_Struct NMESH;
     int o =STL_BIN_Load_NoNormals("test1.stl",&NMESH);
     Edges_Map_2D_struct EdgesMap;
-    EdgesMap.EdgesBuffer = (Line_Segment_2D_Struct*)  Triangles_3D_Extract_Border_Edges_to_2D_no_Z(
-    (float*) NMESH.Triangle_Array,NMESH.Triangles_Count,&EdgesMap.Edges_Count);
+    EdgesMap.EdgesBuffer = (Line_Segment_2D_Struct*)  Triangles_3D_Extract_Border_Edges_to_2D_no_Z((float*) NMESH.Triangle_Array,NMESH.Triangles_Count,&EdgesMap.Edges_Count);
 
-_Entities_LL_ * tmpplayer = Entity_Create(0,0,0,0.30,10,0.25);
-    Entity_set_Model_Instance(tmpplayer,&LD_3D.InstacesBuffer[0]);
+    Entity_set_Model_Instance(Entities_Sys.Entities_LL_First,&LD_3D.InstacesBuffer[0]);
 
     struct Chara * player = &Entities_Sys.Entities_LL_First->Entity;
 

@@ -90,6 +90,21 @@ int l_Fill_VRAM_Buffer(lua_State *L)
 	return 1;
 }
 
+int l_Pho_Entity_Create(lua_State * L)
+{
+    _Entities_LL_ * RET =Entity_Create(
+lua_tonumber(L,1),
+lua_tonumber(L,2),
+lua_tonumber(L,3),
+lua_tonumber(L,4),
+lua_tonumber(L,5),
+lua_tonumber(L,6));
+
+    
+    lua_pushlightuserdata(L,RET);
+   return 1; 
+}
+
 
 void Lua_add_registers(lua_State * L)
 {
@@ -99,8 +114,11 @@ void Lua_add_registers(lua_State * L)
 	lua_register(L,"VRAM_Instance_Create",l_VRAM_Instance_Create);
 	lua_register(L,"VRAM_Instances",l_InstanceBuffer_Set_Capacity);
 	lua_register(L,"VRAM_Buffers",l_VRAMBuffers_allocate);
-    lua_register(L,"Camera_add",l_Pho_Camera_add);
-	lua_register(L,"Model_add",l_Pho_Model_add);	
+	lua_register(L,"Camera_add",l_Pho_Camera_add);
+	lua_register(L,"Model_add",l_Pho_Model_add);
+	
+	//Entity_Create(float X, float Y, float Direction, float Speed, float Turn_Speed, float Hitbox_half_size);
+	lua_register(L,"Entity_Create",l_Pho_Entity_Create);	
 }
 
 #endif

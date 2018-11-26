@@ -12,6 +12,7 @@
 
 #include "libLDCC/LD_Collision_2D.h"
 
+struct __Generic_Parameters_
 
 struct Entities_Sys_Struct
 {
