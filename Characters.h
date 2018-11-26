@@ -1,7 +1,17 @@
+/*This header contains a generic structure for movable entities
+ * This Entity struct can be used to create different things such as enemies or players
+ * This Entity struct have a void* Data so an entity can have a buffer with data
+ * When an entity is deleted, its Data buffer is also deleted by a free().
+ * This Entity struct have an Interface struct so entities can interact with the world
+ * This Interface Struct shall work through protocols.
+*/
+//- Luis Delgado. 2018
+
 #ifndef __Characters_H_
 #define __Characters_H_
 
 #include "libLDCC/LD_Collision_2D.h"
+
 
 struct Entities_Sys_Struct
 {
@@ -15,14 +25,22 @@ struct Entities_Sys_Struct
     } * AABB_LL_First;
     struct _AABB_LL_ * AABB_LL_Last;
 
- 
-
     struct _Entities_LL_
     {
         struct Chara 
-        {
+        { 
+	    void * Data; //Each Entity can have a pointer to a buffer with it's unique data
+	    void * (**Routines)(void *,...);//Each Entity can have a pointer to a buffer with it's unique routines	    
+	    
+	    struct _Entity_Interaction_Interface
+	    {
+		int FLAG;
+		void * pointer;
+	    } Interface;
+
             struct LD_Instance_Struct * VRAM_Instace;
-            struct __Movement_
+
+	    struct __Movement_
             {   
                     float Forward, Turn; 
                     float Turn_Speed;
@@ -30,8 +48,8 @@ struct Entities_Sys_Struct
                     float Mov_Speed;
                     struct _AABB_LL_ * HitBox;
                     float z;
-            } Movement;
-        } Entity;
+            } Movement; 
+	} Entity;
 
         struct _Entities_LL_ * Next;
         struct _Entities_LL_ * Last;
@@ -105,6 +123,8 @@ _Entities_LL_ * Entity_Create(float Pos_X, float Pos_Y,float Direction_Degree,
     tmp->Movement.HitBox->AABB.Half_Extent[1] = HitBox_Half_Length;
     tmp->Movement.z=0;
 
+    tmp->Data=NULL;
+
     Entities_Sys.Entities_Count++;
 
     return Entities_Sys.Entities_LL_Last;
@@ -124,10 +144,11 @@ static void _HitBox_Delete(struct _AABB_LL_ * AABB_LL)
     free(AABB_LL);
 }
 
-void Entity_Delete(struct _Entities_LL_ * Entity_ptr)
+void * Entity_Delete(struct _Entities_LL_ * Entity_ptr,char Keep_Data)
 {
     struct _Entities_LL_ * N;
     struct _Entities_LL_ * L;
+    void * RET = NULL;
 
     N = Entity_ptr->Next;
     L = Entity_ptr->Last;
@@ -137,9 +158,15 @@ void Entity_Delete(struct _Entities_LL_ * Entity_ptr)
 
     _HitBox_Delete(Entity_ptr->Entity.Movement.HitBox);
 
+    if(Entity_ptr->Entity.Data!=NULL || Keep_Data ==0)
+    {free (Entity_ptr->Entity.Data);}
+    else{RET = Entity_ptr->Entity.Data;}
+
     free(Entity_ptr);
 
     Entities_Sys.Entities_Count--;
+
+    return RET;
 }
 
 void Entity_set_Model_Instance(struct _Entities_LL_ * Entity_ptr, 

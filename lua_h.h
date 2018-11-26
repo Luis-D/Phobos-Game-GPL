@@ -6,6 +6,8 @@
 #include <luajit-2.1/lualib.h>
 #include <luajit-2.1/lauxlib.h>
 
+#include "Scene.h"
+
 void bail(lua_State *L, char *msg){
 	fprintf(stderr, "\nFATAL ERROR:\n  %s: %s\n\n",
 		msg, lua_tostring(L, -1));
