@@ -81,7 +81,6 @@ printf("Script done.\n");
 
     
     Edges_Map_2D_struct * EdgesMap = &Pho_Scene.CollisionMap;
-   // Scene_Set_Map_STLbin("test1.stl");
     
 
     Entity_set_Model_Instance(Entities_Sys.Entities_LL_First,&LD_3D.InstacesBuffer[0]);
@@ -136,7 +135,6 @@ printf("Script done.\n");
 
 
         int col = Edges_Map_2D_vs_Swept(EdgesMap, &player->Movement.HitBox->AABB, Swept_AABB_vs_Line_Segment_2D_Check,Swept_AABB_2D_Response_Slide,-1.f);
-//	printf("%d\n",col);        
         if(!col){ V2V2ADD(player->Movement.HitBox->AABB.Center_Position,player->Movement.HitBox->AABB.Direction,player->Movement.HitBox->AABB.Center_Position);}
 
         V2V2ADD(&player->VRAM_Instace->Matrix[12],player->Movement.HitBox->AABB.Center_Position,&player->VRAM_Instace->Matrix[12]);
@@ -144,11 +142,6 @@ printf("Script done.\n");
  
         Pho_Camera_Update(player->Movement.HitBox->AABB.Center_Position[0],player->Movement.HitBox->AABB.Center_Position[1]);
 
-/*
-        printf("cam->%x | pos: %f,%f\n",Camera_System.Current_Camera,
-        player->Movement.HitBox->AABB.Center_Position[0],player->Movement.HitBox->AABB.Center_Position[1]
-        );
-*/
 
 	    LD_3D_Update();
         glClearColor(1.f,0.f,1.f,1.f);
