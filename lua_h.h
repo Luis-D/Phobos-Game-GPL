@@ -105,6 +105,14 @@ lua_tonumber(L,6));
    return 1; 
 }
 
+int l_Scene_Set_Map(lua_State * L)
+{
+    int RET = Scene_Set_Map_STLbin((char*)lua_tostring(L,1));
+    
+    lua_pushinteger(L,RET);
+    return 1;
+}
+
 
 void Lua_add_registers(lua_State * L)
 {
@@ -116,6 +124,9 @@ void Lua_add_registers(lua_State * L)
 	lua_register(L,"VRAM_Buffers",l_VRAMBuffers_allocate);
 	lua_register(L,"Camera_add",l_Pho_Camera_add);
 	lua_register(L,"Model_add",l_Pho_Model_add);
+
+	//Scene_Set_Map(STL_File_Path);
+	lua_register(L,"Scene_Set_Map",l_Scene_Set_Map);
 	
 	//Entity_Create(float X, float Y, float Direction, float Speed, float Turn_Speed, float Hitbox_half_size);
 	lua_register(L,"Entity_Create",l_Pho_Entity_Create);	

@@ -19,8 +19,20 @@ struct Scene_struct
 
     
 
-};
+}Pho_Scene;
 
+int Scene_Set_Map_STLbin(char * Filename)
+{
+    STL_Mesh_NoNormals_Struct NMESH;
+    
+    if(STL_BIN_Load_NoNormals(Filename,&NMESH)==0)
+    {return 0;}
 
+    Pho_Scene.CollisionMap.EdgesBuffer = (Line_Segment_2D_Struct*)Triangles_3D_Extract_Border_Edges_to_2D_no_Z((float*) NMESH.Triangle_Array,
+NMESH.Triangles_Count,&Pho_Scene.CollisionMap.Edges_Count);
+ 
+    free (NMESH.Triangle_Array);
+    return 1;
+}
 
 #endif
