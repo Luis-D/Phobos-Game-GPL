@@ -14,24 +14,25 @@
 struct Scene_struct
 {
     Edges_Map_2D_struct CollisionMap;    
-    //Add a Navigation map. Add a NaviMap struct to LD_Navi_2D.h
-    //Add an event handler.
-
-    
+    Navi_Map_2D_struct NaviMap;
+    STL_Mesh_NoNormals_Struct MapMesh;
 
 }Pho_Scene;
 
 int Scene_Set_Map_STLbin(char * Filename)
 {
-    STL_Mesh_NoNormals_Struct NMESH;
+    STL_Mesh_NoNormals_Struct * NMESH = &Pho_Scene.MapMesh;
+    float * T2D = Triangle_3D_to_2D((float*) NMESH->Triangle_Array,NMESH->Triangles_Count,2);
     
-    if(STL_BIN_Load_NoNormals(Filename,&NMESH)==0)
+    if(STL_BIN_Load_NoNormals(Filename,NMESH)==0 || T2D ==NULL)
     {return 0;}
 
-    Pho_Scene.CollisionMap.EdgesBuffer = (Line_Segment_2D_Struct*)Triangles_3D_Extract_Border_Edges_to_2D_no_Z((float*) NMESH.Triangle_Array,
-NMESH.Triangles_Count,&Pho_Scene.CollisionMap.Edges_Count);
+    Pho_Scene.CollisionMap.EdgesBuffer = (Line_Segment_2D_Struct*)Triangles_3D_Extract_Border_Edges_to_2D_no_Z((float*) NMESH->Triangle_Array,NMESH->Triangles_Count,&Pho_Scene.CollisionMap.Edges_Count);
+
+
+    if(!Navi_Map_2D_Generate((float*)NMESH->Triangle_Array, NMESH->Triangles_Count,&Pho_Scene.NaviMap))
+    {return 0;}
  
-    free (NMESH.Triangle_Array);
     return 1;
 }
 

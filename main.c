@@ -25,6 +25,8 @@
 
 #include "lua_h.h"
 
+#include "Collision.h"
+
 //-Wl,-subsystem,windows
 int main(void)
 {
@@ -69,25 +71,11 @@ int main(void)
 
 printf("Script done.\n");
     
-//    Entity_Create(0,0,0,0.30,10,0.25);
-
-
-/*
-     STL_Mesh_NoNormals_Struct NMESH;
-    int o =STL_BIN_Load_NoNormals("test1.stl",&NMESH);
-    Edges_Map_2D_struct EdgesMap;
-    EdgesMap.EdgesBuffer = (Line_Segment_2D_Struct*)  Triangles_3D_Extract_Border_Edges_to_2D_no_Z((float*) NMESH.Triangle_Array,NMESH.Triangles_Count,&EdgesMap.Edges_Count);
-*/
 
     
-    Edges_Map_2D_struct * EdgesMap = &Pho_Scene.CollisionMap;
-    
-
-    Entity_set_Model_Instance(Entities_Sys.Entities_LL_First,&LD_3D.InstacesBuffer[0]);
 
     struct Chara * player = &Entities_Sys.Entities_LL_First->Entity;
 
-//    printf("%x\n",player);
 
     float * Delta_Time = LD_Timer_init(10,MAX_FPS);
     printf("Loop\n");
@@ -132,14 +120,9 @@ printf("Script done.\n");
     
         float DummyV2[2] = {player->Movement.Mov_Speed * player->Movement.Forward * *Delta_Time,0};
         V2Rotate_FPU(DummyV2,&player->Movement.Direction_Degree,player->Movement.HitBox->AABB.Direction);       
+	
+	Collisions_Update();
 
-
-        int col = Edges_Map_2D_vs_Swept(EdgesMap, &player->Movement.HitBox->AABB, Swept_AABB_vs_Line_Segment_2D_Check,Swept_AABB_2D_Response_Slide,-1.f);
-        if(!col){ V2V2ADD(player->Movement.HitBox->AABB.Center_Position,player->Movement.HitBox->AABB.Direction,player->Movement.HitBox->AABB.Center_Position);}
-
-        V2V2ADD(&player->VRAM_Instace->Matrix[12],player->Movement.HitBox->AABB.Center_Position,&player->VRAM_Instace->Matrix[12]);
-        player->VRAM_Instace->Matrix[14]=0.2;      
- 
         Pho_Camera_Update(player->Movement.HitBox->AABB.Center_Position[0],player->Movement.HitBox->AABB.Center_Position[1]);
 
 

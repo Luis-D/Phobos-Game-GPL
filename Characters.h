@@ -98,8 +98,8 @@ _Entities_LL_ * Entity_Create(float Pos_X, float Pos_Y,float Direction_Degree,
         Entities_Sys.AABB_LL_Last->Next = (struct _AABB_LL_*) 
         malloc(sizeof(struct _AABB_LL_));
 
-        if(Entities_Sys.Entities_LL_Last==NULL || 
-        Entities_Sys.AABB_LL_Last){return NULL;}
+        if(Entities_Sys.Entities_LL_Last->Next==NULL || 
+        Entities_Sys.AABB_LL_Last->Next==NULL){return NULL;}
 
 
         struct _Entities_LL_ * tmp2 = Entities_Sys.Entities_LL_Last->Next;

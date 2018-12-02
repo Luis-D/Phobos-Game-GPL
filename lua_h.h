@@ -100,9 +100,22 @@ lua_tonumber(L,4),
 lua_tonumber(L,5),
 lua_tonumber(L,6));
 
+    if(lua_gettop(L)>6)
+    {
+	Entity_set_Model_Instance(RET,
+	(struct LD_Instance_Struct *)lua_topointer(L,7));
+    }
     
     lua_pushlightuserdata(L,RET);
    return 1; 
+}
+
+int l_Pho_Entity_Set_VRAM_Instance(lua_State * L)
+{
+    Entity_set_Model_Instance(
+(struct _Entities_LL_ *)lua_topointer(L,1),
+(struct LD_Instance_Struct *)lua_topointer(L,2));
+    return 1;
 }
 
 int l_Scene_Set_Map(lua_State * L)
@@ -112,7 +125,6 @@ int l_Scene_Set_Map(lua_State * L)
     lua_pushinteger(L,RET);
     return 1;
 }
-
 
 void Lua_add_registers(lua_State * L)
 {
@@ -129,7 +141,10 @@ void Lua_add_registers(lua_State * L)
 	lua_register(L,"Scene_Set_Map",l_Scene_Set_Map);
 	
 	//Entity_Create(float X, float Y, float Direction, float Speed, float Turn_Speed, float Hitbox_half_size);
-	lua_register(L,"Entity_Create",l_Pho_Entity_Create);	
+	//Entity_Create(float X, float Y, float Direction, float Speed, float Turn_Speed, float Hitbox_half_size, VRAM_Instance);
+	lua_register(L,"Entity_Create",l_Pho_Entity_Create);
+	//Entity_Set_VRAM_Instance(Entity, VRAM_Instance);
+	lua_register(L,"Entity_Set_VRAM_Instance",l_Pho_Entity_Set_VRAM_Instance);	
 }
 
 #endif
