@@ -24,6 +24,13 @@ struct Scene_struct
     
     lua_State * Lua_Script;
 
+    struct _Scene_Trigger_LL_
+    {
+	float Point_A[2];
+	float Point_B[2];
+	char Function[8]; //Function names can only have 7 ASCII symbols plus a \0;
+    } * Trigger_First;
+    struct _Scene_Trigger_LL_ * Trigger_Last;
 }Pho_Scene;
 
 int Scene_Set_Map_STLbin(char * Filename)
