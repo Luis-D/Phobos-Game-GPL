@@ -68,13 +68,11 @@ int main(void)
     Lua_add_registers(L);
     Lua_Execute(L,"script.lua");
 
-
-printf("Script done.\n");
+    printf("Script done.\n");
     
-
-    
-
     struct Chara * player = &Entities_Sys.Entities_LL_First->Entity;
+
+
 
 
     float * Delta_Time = LD_Timer_init(10,MAX_FPS);

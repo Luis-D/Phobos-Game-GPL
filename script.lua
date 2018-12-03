@@ -6,6 +6,8 @@ VRAM_Buffers(2);
 Prota_model =Model_add("mono.iqm");
 Piso_model = Model_add("test1.iqm");
 Scene_Set_Map("test1.stl");
+Scene_Set_Script("Triggers.lua");
+
 
 Prota_VRAM = VRAM_Instance_Create(0,Prota_model);
 VRAM_Buffer_fill(0,0,0,0);

@@ -1,7 +1,7 @@
 #ifndef PHO_LUA_L
 #define PHO_LUA_L
 
-#include "luajit-2.1/luajit.h"
+#include <luajit-2.1/luajit.h>
 #include <luajit-2.1/lua.h>
 #include <luajit-2.1/lualib.h>
 #include <luajit-2.1/lauxlib.h>
@@ -126,8 +126,21 @@ int l_Scene_Set_Map(lua_State * L)
     return 1;
 }
 
-void Lua_add_registers(lua_State * L)
+void Lua_add_registers(lua_State *L); //<- Only declaration
+
+
+int l_Scene_Set_Script(lua_State *L)
 {
+    Scene_Set_Lua_Script((char*)lua_tostring(L,1));
+    Lua_add_registers(Pho_Scene.Lua_Script);
+    lua_pcall(Pho_Scene.Lua_Script,0,0,0);
+    return 1;
+}
+
+
+void Lua_add_registers(lua_State * L) //<- Definition
+{
+	
 	//VRAM_Buffer_fill(int Buffer_ID_number, int First_Instance_ID, int Last_Instance_ID, char Static_Flag);
 	lua_register(L,"VRAM_Buffer_fill",l_Fill_VRAM_Buffer);
 	//VRAM_Instance_Create(int Instance_ID_Number, void * Model)
@@ -139,7 +152,11 @@ void Lua_add_registers(lua_State * L)
 
 	//Scene_Set_Map(STL_File_Path);
 	lua_register(L,"Scene_Set_Map",l_Scene_Set_Map);
+
+	//Scene_Set_Script(File_Path);	
+	lua_register(L,"Scene_Set_Script",l_Scene_Set_Script);
 	
+
 	//Entity_Create(float X, float Y, float Direction, float Speed, float Turn_Speed, float Hitbox_half_size);
 	//Entity_Create(float X, float Y, float Direction, float Speed, float Turn_Speed, float Hitbox_half_size, VRAM_Instance);
 	lua_register(L,"Entity_Create",l_Pho_Entity_Create);
