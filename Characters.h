@@ -123,8 +123,8 @@ _Entities_LL_ * Entity_Create(float Pos_X, float Pos_Y,float Direction_Degree,
     tmp->Movement.HitBox->AABB.Half_Extent[0] = HitBox_Half_Length;
     tmp->Movement.HitBox->AABB.Half_Extent[1] = HitBox_Half_Length;
     tmp->Movement.z=0;
-
     tmp->Data=NULL;
+    tmp->VRAM_Instace=NULL;
 
     Entities_Sys.Entities_Count++;
 

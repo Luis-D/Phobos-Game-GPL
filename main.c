@@ -31,6 +31,12 @@
 int main(void)
 {
 
+    float A[]={-1.f,0,1.f,0};
+    float B[]={0,-1.f,0,1.f};
+    float T;
+    char CC = Check_Segment_vs_Segment_2D(A,B,&T);
+
+    printf("%d | %f\n", CC,T);
 
     int MAX_FPS = 60;
     float Aspect;
