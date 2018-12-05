@@ -105,7 +105,6 @@ lua_tonumber(L,6));
 	Entity_set_Model_Instance(RET,
 	(struct LD_Instance_Struct *)lua_topointer(L,7));
     }
-    
     lua_pushlightuserdata(L,RET);
    return 1; 
 }
