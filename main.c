@@ -30,6 +30,12 @@
 //-Wl,-subsystem,windows
 int main(void)
 {
+    float A[]={-3,0,4,0};
+
+    float B[]={0,-1,0,1};
+    
+    printf("%d\n",Check_Segment_vs_Segment_2D(A,B,NULL));
+
 
 
     int MAX_FPS = 60;
