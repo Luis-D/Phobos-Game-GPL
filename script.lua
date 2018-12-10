@@ -10,18 +10,28 @@ Scene_Set_Script("Triggers.lua");
 
 
 Prota_VRAM = VRAM_Instance_Create(0,Prota_model);
-VRAM_Buffer_fill(0,0,0,0);
 VRAM_Instance_Create(1,Piso_model);
-VRAM_Buffer_fill(1,1,1,1);
+VRAM_Buffer_fill(0,0,1,0);
 
-Camera_add(0,-2,10,0,0,0,50,5);
+VRAM_Buffer_Clear(0)
 
-Camera_add(8,-5,3,4,0,0,90,4);
-Camera_add(8,-5,3,12,0,0,90,4);
+VRAM_Instance_Create(1,Piso_model);
+VRAM_Buffer_fill(0,0,1,0);
+
+--VRAM_Buffer_fill(1,1,1,1);
+
+--Camera_add(-20,-20,20,0,0,0,50,500);
+Camera_add(-2,-9,3,0,0,0,60,20);
+Camera_add(8,-5,3,4,0,0,60,10);
+Camera_add(8,-5,3,12,0,0,60,10);
 
 
-Jugador = Entity_Create(0,0,0,0.30,10,0.25,Prota_VRAM);
-
-otro = Entity_Create(0,0,0,0.30,10,0.25);
 
 
+
+Jugador = Entity_Create(0,-3,0,0.30,10,0.25,Prota_VRAM);
+
+
+--otro = Entity_Create(0,0,0,0.30,10,0.25);
+
+--Scene_Trigger_add(-1000,0,1000,0,"TP",nil)

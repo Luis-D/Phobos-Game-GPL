@@ -56,7 +56,7 @@ int l_Pho_Model_add(lua_State * L)
       	if(IQM_Load_File(_Model_,lua_tostring(L,1)) ==-1){printf("ERROR::MODEL\n");}
 	LD_Model_Object_Struct * Model = LD_3D_ModelsLinkedList_Append((&_Model_->VertexCount));
 	free(_Model_);
-	lua_pushlightuserdata(L,Model);
+	lua_pushlightuserdata(L,LD_3D.ModelsLinkedList_Last);
 	return 1;
 }
 
@@ -77,7 +77,8 @@ int l_VRAMBuffers_allocate(lua_State *L)
 int l_VRAM_Instance_Create(lua_State *L)
 {
 	//printf("Model: \n", (LD_Model_Object_Struct*)lua_topointer(L,2));
-	LD_3D_Fill_Instance(&LD_3D.InstacesBuffer[lua_tointeger(L,1)],(LD_Model_Object_Struct*)lua_topointer(L,2));
+	struct LD_ModelsLinkedList_Struct*tmp = (struct LD_ModelsLinkedList_Struct*)lua_topointer(L,2);
+	LD_3D_Fill_Instance(&LD_3D.InstacesBuffer[lua_tointeger(L,1)],(LD_Model_Object_Struct*)&tmp->Model);
 
 	lua_pushlightuserdata(L,&LD_3D.InstacesBuffer[lua_tointeger(L,1)]);
 	return 1;
@@ -136,6 +137,45 @@ int l_Scene_Set_Script(lua_State *L)
     return 1;
 }
 
+int l_Scene_Trigger_add(lua_State*L)
+{
+	float Segment[] = 
+	{lua_tonumber(L,1),lua_tonumber(L,2),
+	lua_tonumber(L,3),lua_tonumber(L,4)};
+
+	lua_pushlightuserdata(L,
+	Scene_Trigger_Add(Segment,Segment+2,
+	(char*)lua_tostring(L,5),(void*)lua_topointer(L,6)));
+	return 1;
+}
+
+int l_Entity_Teleport(lua_State * L)
+{
+	struct __Movement_ * Mov = (struct __Movement_*)
+	&(((struct _Entities_LL_*) lua_topointer(L,1))->Entity.Movement);
+	Mov->HitBox->AABB.Center_Position[0] = lua_tonumber(L,2);
+	Mov->HitBox->AABB.Center_Position[1] = lua_tonumber(L,3);
+	Mov->Direction_Degree = lua_tonumber(L,4);
+	return 1;
+}
+
+int l_VRAM_Buffer_Clear(lua_State * L)
+{
+	LD_3D_VRAMBuffer_Clear(&LD_3D.VRAMBuffer[lua_tointeger(L,1)],1);
+	return 1;
+}
+
+int l_Model_delete_all(lua_State * L)
+{
+	LD_3D_ModelsLinkedList_System_Delete(NULL);
+	return 1;
+}
+
+int l_Model_delete_Stack(lua_State * L)
+{
+	LD_3D_ModelsLinkedList_System_Delete((struct LD_ModelsLinkedList_Struct *)lua_tointeger(L,1));
+	return 1;
+}
 
 void Lua_add_registers(lua_State * L) //<- Definition
 {
@@ -146,21 +186,28 @@ void Lua_add_registers(lua_State * L) //<- Definition
 	lua_register(L,"VRAM_Instance_Create",l_VRAM_Instance_Create);
 	lua_register(L,"VRAM_Instances",l_InstanceBuffer_Set_Capacity);
 	lua_register(L,"VRAM_Buffers",l_VRAMBuffers_allocate);
+	//VRAM_Buffer_Clear(int VRAM_ID)
+	lua_register(L,"VRAM_Buffer_Clear",l_VRAM_Buffer_Clear);
 	lua_register(L,"Camera_add",l_Pho_Camera_add);
 	lua_register(L,"Model_add",l_Pho_Model_add);
+	//Model_delete_Stack(Model_to_start);
+	lua_register(L,"Model_delete_Stack",l_Model_delete_Stack);
+	lua_register(L,"Model_delete_all",l_Model_delete_all);
 
 	//Scene_Set_Map(STL_File_Path);
 	lua_register(L,"Scene_Set_Map",l_Scene_Set_Map);
-
 	//Scene_Set_Script(File_Path);	
 	lua_register(L,"Scene_Set_Script",l_Scene_Set_Script);
+	//Scene_Trigger_add(A_x,A_y,B_x,B_y,FunctionName_String,Parameters_Pointer);
+	lua_register(L,"Scene_Trigger_add",l_Scene_Trigger_add);
 	
-
 	//Entity_Create(float X, float Y, float Direction, float Speed, float Turn_Speed, float Hitbox_half_size);
 	//Entity_Create(float X, float Y, float Direction, float Speed, float Turn_Speed, float Hitbox_half_size, VRAM_Instance);
 	lua_register(L,"Entity_Create",l_Pho_Entity_Create);
 	//Entity_Set_VRAM_Instance(Entity, VRAM_Instance);
-	lua_register(L,"Entity_Set_VRAM_Instance",l_Pho_Entity_Set_VRAM_Instance);	
+	lua_register(L,"Entity_Set_VRAM_Instance",l_Pho_Entity_Set_VRAM_Instance);
+	//Entity_Teleport(Entity,new_X,new_Y,new_Direction)
+	lua_register(L,"Entity_Teleport",l_Entity_Teleport);
 }
 
 #endif

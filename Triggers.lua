@@ -1,6 +1,10 @@
 
 print("Scene Script")
+i=0
+function test(Caller,Parameter)
+	
+end
 
-function test()
-    print("lolo");
+function TP(Caller,Parameter)
+    Entity_Teleport(Caller,0,-2,40)
 end

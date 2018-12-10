@@ -30,14 +30,6 @@
 //-Wl,-subsystem,windows
 int main(void)
 {
-    float A[]={-3,0,4,0};
-
-    float B[]={0,-1,0,1};
-    
-    printf("%d\n",Check_Segment_vs_Segment_2D(A,B,NULL));
-
-
-
     int MAX_FPS = 60;
     float Aspect;
 
@@ -77,10 +69,8 @@ int main(void)
     printf("Script done.\n");
     
     struct Chara * player = &Entities_Sys.Entities_LL_First->Entity;
-
-
-
-
+   
+    //Pho_Trigger_Execute(Pho_Scene.Triggers.First,Pho_Scene.Lua_Script,(void*) 10,NULL);
     float * Delta_Time = LD_Timer_init(10,MAX_FPS);
     printf("Loop\n");
     while(!glfwWindowShouldClose(window))

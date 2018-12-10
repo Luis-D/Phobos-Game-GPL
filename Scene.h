@@ -13,11 +13,12 @@
 
 #include "View.h"
 #include "Characters.h"
+#include "Triggers.h"
 
 //This struct must handle the entire scene or game world.
 //Its models, cameras, Entities and events
 
-#define FunctionNameSize 8
+
 struct Scene_struct
 {
     Edges_Map_2D_struct CollisionMap;    
@@ -25,19 +26,8 @@ struct Scene_struct
     STL_Mesh_NoNormals_Struct MapMesh;
     
     lua_State * Lua_Script;
+    struct Pho_Triggers_LL_ Triggers;
 
-    struct _Scene_Trigger_LL_
-    {
-	int FLAG;
-	float Point_A[2];
-	float Point_B[2];
-	
-	struct _Scene_Trigger_LL_ * Next;
-	void * Parameter_Pointer;
-	
-	char Function[FunctionNameSize]; //Function names can only have 7 ASCII symbols plus a \0;
-    } * Trigger_First;
-    struct _Scene_Trigger_LL_ * Trigger_Last;
 }Pho_Scene;
 
 int Scene_Set_Map_STLbin(char * Filename)
@@ -63,56 +53,13 @@ int Scene_Set_Lua_Script(char * File)
     luaL_openlibs(Pho_Scene.Lua_Script);
     luaL_loadfile(Pho_Scene.Lua_Script, File);
     
-    Pho_Scene.Trigger_First =NULL;
-    Pho_Scene.Trigger_Last = NULL;
+    Pho_Scene.Triggers.First =NULL;
+    Pho_Scene.Triggers.Last = NULL;
     return 1;
 }
 
-struct _Scene_Trigger_LL_ * Scene_Trigger_Add
-(float * Point_A,float * Point_B,char * Function_Name,void * Parameters_pointer)
-{
-    if(Pho_Scene.Trigger_Last==NULL)
-    {
-	Pho_Scene.Trigger_First = (struct _Scene_Trigger_LL_ *) malloc(sizeof(struct _Scene_Trigger_LL_));
-	Pho_Scene.Trigger_Last = Pho_Scene.Trigger_First;
-    } 
-    else
-    {
-	Pho_Scene.Trigger_Last->Next=(struct _Scene_Trigger_LL_*)malloc(sizeof(struct _Scene_Trigger_LL_));
-	Pho_Scene.Trigger_Last = Pho_Scene.Trigger_Last->Next;
-    }
-    Pho_Scene.Trigger_Last->Next=NULL;
-
-    memcpy(Pho_Scene.Trigger_Last->Function,Function_Name,FunctionNameSize);
-    Pho_Scene.Trigger_Last->Function[FunctionNameSize-1]=0; //<- Set \0 as the last character
-    Pho_Scene.Trigger_Last->FLAG=0; 
-    if(Point_A!=NULL){memcpy(Pho_Scene.Trigger_Last->Point_A,Point_A,sizeof(float)*2);}
-    if(Point_B!=NULL){memcpy(Pho_Scene.Trigger_Last->Point_B,Point_B,sizeof(float)*2);}
-
-    return Pho_Scene.Trigger_Last;
-}
-
-void Scene_Trigger_Clear_All()
-{
-    struct _Scene_Trigger_LL_* Exp = Pho_Scene.Trigger_First;
-    struct _Scene_Trigger_LL_* tmp;    
-
-    Pho_Scene.Trigger_First=NULL;
-    Pho_Scene.Trigger_Last=NULL;
-    
-    while(Exp!=NULL)
-    {
-	tmp = Exp->Next;
-	free(Exp);
-	Exp = tmp;	
-    }
-}
-
-void Scene_Trigger_Execute(struct _Scene_Trigger_LL_ * Trigger)
-{
-    lua_getglobal(Pho_Scene.Lua_Script,Trigger->Function); 
-    lua_pushlightuserdata(Pho_Scene.Lua_Script,Trigger->Parameter_Pointer);
-    lua_pcall(Pho_Scene.Lua_Script,1,0,0);
-}   
+#define Scene_Trigger_Add(A,B,Func,_Ptr) Pho_Trigger_Add(&Pho_Scene.Triggers,A,B,Func,_Ptr)
+#define Scene_Trigger_Execute(Trigger,Caller,_Over) Pho_Trigger_Execute(Trigger,Pho_Scene.Lua_Script,Caller,_Over)
+#define Scene_Trigger_Clear_All() Pho_Trigger_Clear_All(&Pho_Scene.Triggers)
 
 #endif
