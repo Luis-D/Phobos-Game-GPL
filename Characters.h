@@ -50,7 +50,7 @@ struct Entities_Sys_Struct
                     struct _AABB_LL_ * HitBox;
                     float z;
             } Movement; 
-	    } Entity;
+	} Entity;
 
         struct _Entities_LL_ * Next;
         struct _Entities_LL_ * Last;

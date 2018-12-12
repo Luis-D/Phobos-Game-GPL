@@ -67,10 +67,17 @@ int main(void)
     Lua_Execute(L,"script.lua");
 
     printf("Script done.\n");
-    
+  
+  
     struct Chara * player = &Entities_Sys.Entities_LL_First->Entity;
-   
-    //Pho_Trigger_Execute(Pho_Scene.Triggers.First,Pho_Scene.Lua_Script,(void*) 10,NULL);
+
+/* 
+     struct __Movement_ * Mov = &player->Movement;
+       Mov->HitBox->AABB.Center_Position[0] = Pho_Scene.NaviMap.Node_Array[6].x;
+       Mov->HitBox->AABB.Center_Position[1] = Pho_Scene.NaviMap.Node_Array[6].y;
+        Mov->Direction_Degree = lua_tonumber(L,4);
+*/
+ 
     float * Delta_Time = LD_Timer_init(10,MAX_FPS);
     printf("Loop\n");
     while(!glfwWindowShouldClose(window))
