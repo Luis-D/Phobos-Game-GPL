@@ -71,7 +71,7 @@ int main(void)
   
     struct Chara * player = &Entities_Sys.Entities_LL_First->Entity;
 
-/* 
+/*
      struct __Movement_ * Mov = &player->Movement;
        Mov->HitBox->AABB.Center_Position[0] = Pho_Scene.NaviMap.Node_Array[6].x;
        Mov->HitBox->AABB.Center_Position[1] = Pho_Scene.NaviMap.Node_Array[6].y;
