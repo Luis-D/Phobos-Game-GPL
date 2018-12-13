@@ -68,21 +68,49 @@ int main(void)
 
     printf("Script done.\n");
   
-  
+    Path_2D_struct * Path = Navi_Map_2D_FindPath(&Pho_Scene.NaviMap.Node_Array[0],&Pho_Scene.NaviMap.Node_Array[1],0);
+    
+    _NavNode_2D_LL * explorer = Path->First;
+    while(explorer != NULL)
+    {
+	printf("->%lx\n",explorer->Node);
+	explorer=explorer->Next;
+    }
+    Path_2D_Destroy(Path);
+/*    
+explorer = Path->First;
+    while(explorer != NULL)
+    {
+	printf("->%lx\n",explorer->Node);
+	explorer=explorer->Next;
+    }
+  */
     struct Chara * player = &Entities_Sys.Entities_LL_First->Entity;
 
-/*
+
+    int NN = 1;
      struct __Movement_ * Mov = &player->Movement;
-       Mov->HitBox->AABB.Center_Position[0] = Pho_Scene.NaviMap.Node_Array[6].x;
-       Mov->HitBox->AABB.Center_Position[1] = Pho_Scene.NaviMap.Node_Array[6].y;
-        Mov->Direction_Degree = lua_tonumber(L,4);
-*/
+       Mov->HitBox->AABB.Center_Position[0] = Pho_Scene.NaviMap.Node_Array[NN].x;
+       Mov->HitBox->AABB.Center_Position[1] = Pho_Scene.NaviMap.Node_Array[NN].y;
+       //Mov->HitBox->AABB.Center_Position[0] = -3;
+       //Mov->HitBox->AABB.Center_Position[1] = 3; 
+	Mov->Direction_Degree = lua_tonumber(L,4);
+
  
-    float * Delta_Time = LD_Timer_init(10,MAX_FPS);
+    float * Delta_Time = Delta_time_init(MAX_FPS);
     printf("Loop\n");
     while(!glfwWindowShouldClose(window))
     {
         Delta_time_Frame_Start();
+
+	//printf("Delta: %f \n",*Delta_Time);
+    
+	for(int ii=0;ii<10;ii++)
+	{ 
+	    Path =  Navi_Map_2D_FindPath(&Pho_Scene.NaviMap.Node_Array[0],&Pho_Scene.NaviMap.Node_Array[1],0);
+	    Path_2D_Destroy(Path);
+	}   
+
 
 
         player->Movement.Forward=0.f;
