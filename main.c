@@ -16,16 +16,13 @@
 #include "libLDCC/GL/DESKTOP/GLFW_GL_EXT.h"
 #endif
 
-
 #include "libLDCC/GL/OES2/OES_DDS.h"
 #include "libLDCC/GL/GL_SHADERS.h"
 #include "libLDCC/GL/OES2/LD_Def_Lighting_OES.h"
 
-
-
-#include "lua_h.h"
-
 #include "Collision.h"
+#include "AI.h"
+#include "lua_h.h"
 
 //-Wl,-subsystem,windows
 int main(void)
@@ -68,8 +65,10 @@ int main(void)
 
     printf("Script done.\n");
   
+/*
     Path_2D_struct * Path = Navi_Map_2D_FindPath(&Pho_Scene.NaviMap.Node_Array[0],&Pho_Scene.NaviMap.Node_Array[1],0);
     
+    //printf("-->%x\n",Path);
     _NavNode_2D_LL * explorer = Path->First;
     while(explorer != NULL)
     {
@@ -77,6 +76,7 @@ int main(void)
 	explorer=explorer->Next;
     }
     Path_2D_Destroy(Path);
+*/
 /*    
 explorer = Path->First;
     while(explorer != NULL)
@@ -86,91 +86,62 @@ explorer = Path->First;
     }
   */
     struct Chara * player = &Entities_Sys.Entities_LL_First->Entity;
+/*
 
-
-    int NN = 1;
+    int NN = 0;
      struct __Movement_ * Mov = &player->Movement;
        Mov->HitBox->AABB.Center_Position[0] = Pho_Scene.NaviMap.Node_Array[NN].x;
        Mov->HitBox->AABB.Center_Position[1] = Pho_Scene.NaviMap.Node_Array[NN].y;
        //Mov->HitBox->AABB.Center_Position[0] = -3;
        //Mov->HitBox->AABB.Center_Position[1] = 3; 
 	Mov->Direction_Degree = lua_tonumber(L,4);
+*/
 
- 
     float * Delta_Time = Delta_time_init(MAX_FPS);
     printf("Loop\n");
     while(!glfwWindowShouldClose(window))
     {
         Delta_time_Frame_Start();
-
-	//printf("Delta: %f \n",*Delta_Time);
-    
-	for(int ii=0;ii<10;ii++)
-	{ 
-	    Path =  Navi_Map_2D_FindPath(&Pho_Scene.NaviMap.Node_Array[0],&Pho_Scene.NaviMap.Node_Array[1],0);
-	    Path_2D_Destroy(Path);
-	}   
-
-
-
-        player->Movement.Forward=0.f;
-        player->Movement.Turn =0.f;
+	
+	float F=0,T=0;
         if(glfwGetKey(window, GLFW_KEY_LEFT))
-        {player->Movement.Turn=1.f;}
+        {T=1.f;}
         if(glfwGetKey(window, GLFW_KEY_RIGHT))
-        {player->Movement.Turn=-1.f;}
+        {T=-1.f;}
 
         if(glfwGetKey(window, GLFW_KEY_UP))
-        {player->Movement.Forward=1.f;}
+        {F=1.f;}
         if(glfwGetKey(window, GLFW_KEY_DOWN))
-        {player->Movement.Forward=-1.f;}
+        {F=-1.f;}
 
+	Entity_Movement((struct _Entities_LL_*)player,F,T);
+	Characters_AI_Update();
 
-
-        player->Movement.Direction_Degree+=
-        player->Movement.Turn_Speed * player->Movement.Turn * *Delta_Time;
-
-
-        memcpy(player->VRAM_Instace->Matrix,Identity_Matrix_4x4,4*16);
-
-
-        player->VRAM_Instace->Matrix[0] *=0.2;
-        player->VRAM_Instace->Matrix[5] *=0.2;
-        player->VRAM_Instace->Matrix[10] *=0.2;
-
-
-        float Q[4]; float QM[16]; float Ax [3] ={0,0,1.f};
-        AxisAngleToQuaternion(Ax,(player->Movement.Direction_Degree-90)*-1.f,Q);
-        QuaternionToMatrix4x4(Q,QM);
-        
-        M4x4MUL(player->VRAM_Instace->Matrix,QM,player->VRAM_Instace->Matrix);
-        player->Movement.HitBox->AABB.Direction[0]=0;
-        player->Movement.HitBox->AABB.Direction[1]=0;
-    
-        float DummyV2[2] = {player->Movement.Mov_Speed * player->Movement.Forward * *Delta_Time,0};
-        V2Rotate_FPU(DummyV2,&player->Movement.Direction_Degree,player->Movement.HitBox->AABB.Direction);       
+	//printf("%f\n",player->Movement.Direction_Degree);
 	
 	Collisions_Update();
+
+	Entity_pos_Update_All(); //<- This updates the Entities after the computations
 
         Pho_Camera_Update(player->Movement.HitBox->AABB.Center_Position[0],player->Movement.HitBox->AABB.Center_Position[1]);
 
 
-	    LD_3D_Update();
+	LD_3D_Update();
         glClearColor(1.f,0.f,1.f,1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
         glUseProgram(Shader_DeferredLight_Gbuffer);
         glUniformMatrix4fv(Uniform_Locs_Mat4[0],1,0,ProjectionViewMatrix);  
         glDisable(GL_BLEND);
+	
         LD_3D_Draw_G_Pass();
+
         glEnable(GL_BLEND);
 
         glfwSwapBuffers(window);
         glfwPollEvents();       
 
-
         Delta_time_Frame_End();
-     
     }
  
     glfwTerminate();

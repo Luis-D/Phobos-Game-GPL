@@ -1,3 +1,9 @@
+//This header describes a very robust event triggering system
+// - Luis Delgado. 2018
+
+#ifndef _PHO_TRIGGERS_H_
+#define _PHO_TRIGGERS_H_
+
 #include "libLDCC/LD_Geometry.h"
 
 #define FunctionNameSize 8
@@ -12,7 +18,7 @@ struct Pho_Triggers_LL_
         struct _Trigger_Node_ * Next;
         void * Parameter_Pointer;
         
-        char Function[FunctionNameSize]; //Function names can only have 7 ASCII symbols plus a \0;
+        char Function[FunctionNameSize]; //Function names can only have 7 ASCII symbols plus a \0
     } * First;
     struct _Trigger_Node_ * Last;
 };
@@ -99,3 +105,5 @@ float * Test_Against,void * Caller_Pointer)
         Ex=Ex->Next;
     }
 }
+
+#endif
