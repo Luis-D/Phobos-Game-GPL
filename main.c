@@ -31,7 +31,7 @@ int main(void)
     float Aspect;
 
     glfwInit();
-    GLFW_Context_Struct Context_State = Context_State_Create (640,480,0,60,0,"Tech Demo. Luis Delgado. October 4th, 2018.",4);
+    GLFW_Context_Struct Context_State = Context_State_Create (640,480,0,60,0,"Tech Demo. Luis Delgado. December,18, 2018.",4);
     GLFWwindow* window = GLFW_Create_Window(&Context_State);
 
     Aspect = (Context_State.Width*1.f)/(Context_State.Height*1.f);
@@ -102,22 +102,24 @@ explorer = Path->First;
     while(!glfwWindowShouldClose(window))
     {
         Delta_time_Frame_Start();
+
+	//printf("%f\n",*Delta_Time);
 	
 	float F=0,T=0;
         if(glfwGetKey(window, GLFW_KEY_LEFT))
         {T=1.f;}
         if(glfwGetKey(window, GLFW_KEY_RIGHT))
         {T=-1.f;}
-
         if(glfwGetKey(window, GLFW_KEY_UP))
         {F=1.f;}
         if(glfwGetKey(window, GLFW_KEY_DOWN))
         {F=-1.f;}
-
 	Entity_Movement((struct _Entities_LL_*)player,F,T);
-	Characters_AI_Update();
+	
+	
 
-	//printf("%f\n",player->Movement.Direction_Degree);
+
+	Characters_AI_Update();
 	
 	Collisions_Update();
 

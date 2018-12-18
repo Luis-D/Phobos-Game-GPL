@@ -268,11 +268,14 @@ void Entity_Update(struct _Entities_LL_*Entity_ptr)
     float Delta_Time = CHRONO_STRUCT.DELTA_TIME.Delta_Time;
 
     struct __Movement_ * M = &Entity_ptr->Entity.Movement;
+    
+    M->Direction_Degree+=M->Turn_Speed * M->Turn * Delta_Time;
+
+
 
     float DummyV2[]={M->Mov_Speed * M->Forward * Delta_Time,0};
     V2Rotate_FPU(DummyV2,&M->Direction_Degree,M->HitBox->AABB.Direction);
     
-    M->Direction_Degree+=M->Turn_Speed * M->Turn * Delta_Time;
 
     struct LD_Instance_Struct * Instance = Entity_ptr->Entity.VRAM_Instace;
     
@@ -289,7 +292,7 @@ void Entity_Update(struct _Entities_LL_*Entity_ptr)
 	}
 
 	float Q[4]; float QM[16]; float Ax [3] ={0,0,1.f};
-	AxisAngleToQuaternion(Ax,(M->Direction_Degree-90)*-1.f,Q);
+	AxisAngleToQuaternion(Ax,(M->Direction_Degree+90)*-1.f,Q);
 	QuaternionToMatrix4x4(Q,QM);
 	M4x4MUL(Instance->Matrix,QM,Instance->Matrix);
 

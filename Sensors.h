@@ -113,11 +113,18 @@ float * Sensor_Position,float Sensor_Degrees,float * Point_2D)
 {
     float FOV_Degrees  = Sensor->Parameter_1;
     float Max_Distance = Sensor->Parameter_2;
+    
+    float Distance = V2Distance(Sensor_Position,Point_2D);
 
-    char In_Distance =(V2Distance(Sensor_Position,Point_2D) <= Max_Distance);
+    char In_Distance =( Distance <= Max_Distance);
 
     float Ang; V2DegreesV2_FPU(Sensor_Position,Point_2D,&Ang);
-    char In_FOV =(180.f - abs(abs(Sensor_Degrees - Ang) - 180.f) <= (FOV_Degrees*0.5));
+    float AngDiff = 180.f - fabsf(fabsf(Sensor_Degrees - Ang) - 180.f);
+    char In_FOV =( AngDiff<= (FOV_Degrees*0.5));
+
+//    printf("SAng: %f | Dist: %f | Ang: %f | AngDiff: %f | (%x)(%x)\n",Sensor_Degrees,Distance,Ang,AngDiff,In_Distance,In_FOV);  
+
+ 
 
     if(In_Distance && In_FOV)
     {

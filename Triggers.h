@@ -16,8 +16,8 @@ struct Pho_Triggers_LL_
         float Point_B[2];
         
         struct _Trigger_Node_ * Next;
-        void * Parameter_Pointer;
         
+	void * Parameter_Pointer;
         char Function[FunctionNameSize]; //Function names can only have 7 ASCII symbols plus a \0
     } * First;
     struct _Trigger_Node_ * Last;
@@ -26,7 +26,7 @@ struct Pho_Triggers_LL_
 struct _Trigger_Node_ * Pho_Trigger_Add
 (struct Pho_Triggers_LL_ * LinkedList, 
 float * Point_A,float * Point_B,
-char * Function_Name,void * Parameters_pointer)
+char * Function_Name,void * Parameter_pointer)
 {
     if(LinkedList->Last==NULL)
     {
@@ -40,6 +40,7 @@ char * Function_Name,void * Parameters_pointer)
     }
     LinkedList->Last->Next=NULL;
 
+    LinkedList->Last->Parameter_Pointer=Parameter_pointer; 
     memcpy(LinkedList->Last->Function,Function_Name,FunctionNameSize);
     LinkedList->Last->Function[FunctionNameSize-1]=0; //<- Set \0 as the last character
     if(Point_A!=NULL){memcpy(LinkedList->Last->Point_A,Point_A,sizeof(float)*2);}
@@ -66,12 +67,15 @@ void Pho_Trigger_Clear_All(struct Pho_Triggers_LL_ * LinkedList)
 
 void Pho_Trigger_Execute(struct _Trigger_Node_ * Trigger,lua_State * Lua_Script,void * Caller_Pointer,void * Overrider_Pointer)
 {
-    if(Overrider_Pointer==NULL)
-    {Overrider_Pointer = Trigger->Parameter_Pointer;}
-    lua_getglobal(Lua_Script,Trigger->Function);
-    lua_pushlightuserdata(Lua_Script,Caller_Pointer);
-    lua_pushlightuserdata(Lua_Script,Overrider_Pointer);
-    lua_pcall(Lua_Script,2,0,0);
+    if(Lua_Script != NULL)
+    {
+	if(Overrider_Pointer==NULL)
+	{Overrider_Pointer = Trigger->Parameter_Pointer;}
+	lua_getglobal(Lua_Script,Trigger->Function);
+	lua_pushlightuserdata(Lua_Script,Caller_Pointer);
+	lua_pushlightuserdata(Lua_Script,Overrider_Pointer);
+	lua_pcall(Lua_Script,2,0,0);
+    }
 }   
 
 #define FunctionPrototypes char (*Checker_Func) (struct _Trigger_Node_ *,float*,lua_State *,void*,void*)

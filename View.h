@@ -1,7 +1,7 @@
 /* * * * * 
  * This Header defines the camera system for the game.
  * * * * * /
-/*  - Luis Delgado. 2018 */
+*  - Luis Delgado. 2018 */
 
 #ifndef _PHO_VIEW_H_
 #define _PHO_VIEW_H_
@@ -9,37 +9,6 @@
 #include "libLDCC/LD_Math.h"
 #include <math.h>
 
-/*
-    Notes: 
-    float DistanceV2(float * A, float * B) needs ASM implementation
-    float DegreesV2(float * Point2D)    needs ASM implementation
-    float DegreesV2V2(float * A, float * B) needs ASM implementation
-*/
-
-/*
-float DistanceV2(float * A, float * B)
-{
-    float XMM0[2]; float XMM1[2]; 
-    memcpy(XMM0,A,8);memcpy(XMM1,B,8);
-    XMM1[0]-=XMM0[0];XMM1[1]-=XMM0[1];
-
-    return sqrtf((XMM1[0]*XMM1[0])+(XMM1[1]*XMM1[1]));
-}
-
-float DegreesV2(float * Point2D)
-{
-    return atanf(Point2D[1]/Point2D[0]) * 180.f / M_PI;
-}
-
-float DegreesV2V2(float * A, float * B)
-{
-    float XMM0[2]; float XMM1[2]; 
-    memcpy(XMM0,A,8);memcpy(XMM1,B,8);
-    XMM1[0]-=XMM0[0];XMM1[1]-=XMM0[1];
-
-    return DegreesV2(XMM1);
-}
-*/
 
 
 /*** Global Matrices ***/
@@ -157,7 +126,7 @@ void Pho_Camera_Update(float x, float y)
 
             float Ang; V2DegreesV2_FPU(&First_Cam->view.From.x,Pos,&Ang);
             char In_FOV =  
-            (180.f - abs(abs(First_Cam->DegreeAngle - Ang) - 180.f) <= (First_Cam->FieldOfView*0.5));
+            (180.f - fabsf(fabsf(First_Cam->DegreeAngle - Ang) - 180.f) <= (First_Cam->FieldOfView*0.5));
             if(!In_Distance || !In_FOV)
             {
                 Camera_System.Current_Camera=NULL;
@@ -176,7 +145,7 @@ void Pho_Camera_Update(float x, float y)
 
             float Ang; V2DegreesV2_FPU(&First_Cam->view.From.x,Pos,&Ang);
             char In_FOV =  
-            (180.f - abs(abs(First_Cam->DegreeAngle - Ang) - 180.f) <= (First_Cam->FieldOfView*0.5));
+            (180.f - fabs(fabsf(First_Cam->DegreeAngle - Ang) - 180.f) <= (First_Cam->FieldOfView*0.5));
 
             if(In_Distance && In_FOV)
             {

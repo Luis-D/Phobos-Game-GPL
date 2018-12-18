@@ -54,10 +54,36 @@ void Entity_AI_Evaluate_Path(_Entities_LL_* Entity,float * Point2D_Return)
 
 char Entity_AI_Sensor_Check_Entity(_Entities_LL_* Entity,_Entities_LL_*Test)
 {
-   return Sensor_Check_as_FOV_2D(&Entity->Entity.Sensor.Sensor,
+    return Sensor_Check_as_FOV_2D(&Entity->Entity.Sensor.Sensor,
     Entity->Entity.Movement.HitBox->AABB.Center_Position,
     Entity->Entity.Movement.Direction_Degree,
     Test->Entity.Movement.HitBox->AABB.Center_Position); 
+}
+
+#define Sensor_Entities_Buffer 0
+#define Sensor_Drops_Buffer 1
+#define Sensor_Interactives_Buffer 2
+char Entity_AI_Sensor_Update(_Entities_LL_* Entity)
+{
+    char SomethingFound=0;
+    struct Sensor_struct * Sensor = &Entity->Entity.Sensor.Sensor;
+
+
+    //Check for all the others entities//
+    _Entities_LL_*Ex = Entities_Sys.Entities_LL_First;
+
+    while(Ex!=NULL)
+    {
+	if(Entity_AI_Sensor_Check_Entity(Entity,Ex))
+	{
+	    SomethingFound=1;
+	    Sensor_add(Sensor,Sensor_Entities_Buffer,Ex);
+	}
+	Ex=Ex->Next;
+    }
+
+
+    return SomethingFound;
 }
 
 void Characters_AI_Update()

@@ -158,7 +158,7 @@ int l_Script_Destroy(lua_State *L)
 {
     lua_State * SCRIPT = (lua_State *) lua_topointer(L,1);
     lua_close(SCRIPT);
-    return 1;
+    return 0;
 }
 
 int l_Script_Load(lua_State *L)
@@ -185,12 +185,18 @@ int l_Script_This(lua_State *L)
     return 1;
 }
 
-int l_Scene_Set_Script(lua_State *L)
+int l_Scene_Set_Script_File(lua_State *L)
 {
     Scene_Set_Lua_Script((char*)lua_tostring(L,1));
     Lua_add_registers(Pho_Scene.Lua_Script);
     lua_pcall(Pho_Scene.Lua_Script,0,0,0);
-    return 1;
+    return 0;
+}
+
+int l_Scene_Set_Script(lua_State *L)
+{
+    Pho_Scene.Lua_Script = (lua_State*) lua_topointer(L,1);
+    return 0;
 }
 
 int l_Scene_Trigger_add(lua_State*L)
@@ -198,10 +204,12 @@ int l_Scene_Trigger_add(lua_State*L)
 	float Segment[] = 
 	{lua_tonumber(L,1),lua_tonumber(L,2),
 	lua_tonumber(L,3),lua_tonumber(L,4)};
-
+	
+	void * OverPTR = (void *) lua_topointer(L,6);
+	
 	lua_pushlightuserdata(L,
 	Scene_Trigger_Add(Segment,Segment+2,
-	(char*)lua_tostring(L,5),(void*)lua_topointer(L,6)));
+	(char*)lua_tostring(L,5),OverPTR));
 	return 1;
 }
 
@@ -245,7 +253,30 @@ int l_Entity_Get_Position_EXT(lua_State *L)
     return 2;
 }
 
-char __ENTITY_GOTO_(struct _Entities_LL_ * Entity,float * Point2D, float Forward)
+int Angles_Check_Side(float Angle, float Test) //Needs ASM implementation
+{
+    float Diff =  Test - Angle;
+
+    if(Diff < -180.0f){Diff += 360.f;}
+    if(Diff > 180.0f){Diff -= 360.f;}
+
+    if(Diff > 0.0f){return 1;}
+    if(Diff < 0.0f){return -1;}
+
+    return 0;
+}
+
+float Angle_Diff(float Angle, float Test) //Needs ASM implementation
+{
+    return 180.f - fabsf(fabsf(Angle - Test)-180.f);
+}
+
+float Angle_0_360(float Angle) //Needs ASM implementation
+{
+    return Angle-((floor(Angle/360.f))*360.f);
+}
+
+char __ENTITY_GOTO_(struct _Entities_LL_ * Entity,float * Point2D, float Forward,float Turn)
 {
     float * Position =Entity->Entity.Movement.HitBox->AABB.Center_Position;
     float Delta = CHRONO_STRUCT.DELTA_TIME.Delta_Time;
@@ -253,11 +284,34 @@ char __ENTITY_GOTO_(struct _Entities_LL_ * Entity,float * Point2D, float Forward
     float DistanceToPoint =V2Distance(Position,Point2D);
     if(DistanceToPoint<=DistanceToMove)
     {memcpy(Position,Point2D,8);Forward=0;return 1;}
+    
+	float AngleToPoint;V2DegreesV2_FPU(Position,Point2D,&AngleToPoint);
+	float Angle = Entity->Entity.Movement.Direction_Degree;
+	Angle = Angle_0_360(Angle);
+	AngleToPoint = Angle_0_360(AngleToPoint);
+	
+	float AngleToTurn = Entity->Entity.Movement.Turn_Speed*Turn*Delta; 
+	float AngleDiff = Angle_Diff(Angle,AngleToPoint);
+	
+    if( Turn>= 0)
+    {
+
+	if((AngleDiff) <= AngleToTurn)
+	{
+	    if(AngleToTurn != 0)
+	    {Turn = AngleDiff / AngleToTurn;}
+	    else{Turn=0;}
+	}   
+	if(Angles_Check_Side(Angle,AngleToPoint)==-1){Turn*=-1;}
+//	printf("Ang: %f | Diff: %f | Turn: %f | %f\n",Angle,AngleDiff,AngleToTurn,Turn);
+    }
     else
     {
-	V2DegreesV2_FPU(Position,Point2D,&Entity->Entity.Movement.Direction_Degree);
-    } 
-    Entity_Movement(Entity,Forward,0);
+	Turn=0;
+	Entity->Entity.Movement.Direction_Degree=AngleToPoint;
+    }
+	//printf("%f | %f \n",Angle,AngleToPoint);
+       Entity_Movement(Entity,Forward,Turn);
     return 0;
 }
 
@@ -265,10 +319,12 @@ int l_Entity_Goto(lua_State *L)
 {
     struct _Entities_LL_ * Entity =(_Entities_LL_*)lua_topointer(L,1);
     float * Point2D=(float *)lua_topointer(L,2);
-    float Forward = 1.f;
-    if(lua_gettop(L) > 2)
-    {Forward = lua_tonumber(L,3);}
-    char RET = __ENTITY_GOTO_(Entity,Point2D,Forward); 
+    float Forward = 1.f, Turn = -1;
+    if(lua_gettop(L) > 3)
+    {Forward = lua_tonumber(L,4);}
+    if(lua_gettop(L) > 4)
+    {Turn = lua_tonumber(L,5);}
+    char RET = __ENTITY_GOTO_(Entity,Point2D,Forward,Turn); 
     lua_pushboolean(L,RET);
     return 1;
 }
@@ -277,10 +333,12 @@ int l_Entity_Goto_EXT(lua_State *L)
 {
     struct _Entities_LL_ * Entity =(_Entities_LL_*)lua_topointer(L,1);
     float Point2D[]={lua_tonumber(L,2),lua_tonumber(L,3)};
-    float Forward = 1.f;
+    float Forward = 1.f, Turn = -1;
     if(lua_gettop(L) > 3)
     {Forward = lua_tonumber(L,4);}
-    char RET = __ENTITY_GOTO_(Entity,Point2D,Forward); 
+    if(lua_gettop(L) > 4)
+    {Turn = lua_tonumber(L,5);}
+    char RET = __ENTITY_GOTO_(Entity,Point2D,Forward,Turn); 
     lua_pushboolean(L,RET);
     return 1;
 }
@@ -334,6 +392,42 @@ int l_Entity_Path_Get_XY(lua_State *L)
 int l_Entity_Get_ID(lua_State *L)
 {
     lua_pushinteger(L,((struct _Entities_LL_*)lua_topointer(L,1))->Entity.ID );
+    return 1;
+}
+
+int l_Entity_Get_Data(lua_State *L)
+{
+    lua_pushlightuserdata(L,((struct _Entities_LL_*)lua_topointer(L,1))->Entity.Data);
+    return 1;
+}
+
+int l_Entity_Set_Data(lua_State *L)
+{
+    ((struct _Entities_LL_*)lua_topointer(L,1))->Entity.Data   ;
+    return 1;
+}
+
+int l_Entity_Set_Sensor(lua_State *L)
+{
+    struct _Entities_LL_*Entity = ((struct _Entities_LL_*)lua_topointer(L,1));
+    Entity_set_Sensor_Parameters(Entity,lua_tonumber(L,2),lua_tonumber(L,3));
+    return 0;
+}
+
+int l_Entity_Sensor_Check_Entity(lua_State *L)
+{
+    char Bool = 0;
+    struct _Entities_LL_* Caller = (struct _Entities_LL_*) lua_topointer(L,1);
+    struct _Entities_LL_* Test = (struct _Entities_LL_*) lua_topointer(L,2);
+    Bool=Entity_AI_Sensor_Check_Entity(Caller,Test);
+    lua_pushboolean(L,Bool);
+    return 1;
+}
+
+int l_Entity_Sensor_Update(lua_State*L)
+{
+    char Boolean =Entity_AI_Sensor_Update( (struct _Entities_LL_*) lua_topointer(L,1));
+    lua_pushboolean(L,Boolean);
     return 1;
 }
 
@@ -406,7 +500,9 @@ void Lua_add_registers(lua_State * L) //<- Definition
 
 	//Scene_Set_Map(STL_File_Path);
 	lua_register(L,"Scene_Set_Map",l_Scene_Set_Map);
-	//Scene_Set_Script(File_Path);	
+	//Scene_Set_Script_File(File_Path);	
+	lua_register(L,"Scene_Set_Script_File",l_Scene_Set_Script_File);
+	//Scene_Set_Script(lua_State);	<- It uses a preloaded Lua State
 	lua_register(L,"Scene_Set_Script",l_Scene_Set_Script);
 	//Scene_Trigger_add(A_x,A_y,B_x,B_y,FunctionName_String,Parameters_Pointer);
 	lua_register(L,"Scene_Trigger_add",l_Scene_Trigger_add);
@@ -420,7 +516,6 @@ void Lua_add_registers(lua_State * L) //<- Definition
 	lua_register(L,"Path_Find",l_Path_Find);
 	//Path_Destroy(Path)
 	lua_register(L,"Path_Destroy",l_Path_Destroy);
-
 	
 
 	//Entity_Create(int ID,float X, float Y, float Direction, float Speed, float Turn_Speed, float Hitbox_half_size,script,function);
@@ -440,7 +535,16 @@ void Lua_add_registers(lua_State * L) //<- Definition
 	lua_register(L,"Entity_Get_Position_EXT",l_Entity_Get_Position_EXT);
 	//int Entity_Get_ID(Entity); <- It returns the ID of the entity;
 	lua_register(L,"Entity_Get_ID",l_Entity_Get_ID);	
-
+	//Entity_Set_Sensor(Entity,Parameter_1,Parameter_2)
+	lua_register(L,"Entity_Set_Sensor",l_Entity_Set_Sensor);
+	//Entity_Sensor_Check_Entity(Entity, Target) <-Check if the target is visible.
+	lua_register(L,"Entity_Sensor_Check_Entity",l_Entity_Sensor_Check_Entity);
+	//Entity_Sensor_Update(Entity) <- It updates the Entity's sensor
+	lua_register(L,"Entity_Sensor_Update",l_Entity_Sensor_Update);
+	//Entity_Set_Data//
+	lua_register(L,"Entity_Set_Data",l_Entity_Set_Data);
+	//Entity_Get_Data//
+	lua_register(L,"Entity_Get_Data",l_Entity_Get_Data);
 	//Entity_Goto_EXT(Entity,X,Y);
 	//Entity_Goto_EXT(Entity,X,Y,Speed_Multiplier);
 	lua_register(L,"Entity_Goto_EXT",l_Entity_Goto_EXT);
