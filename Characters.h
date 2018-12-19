@@ -324,6 +324,8 @@ void Entity_Movement(struct _Entities_LL_*Entity_ptr,float Forward_Multiplier, f
     Entity_Update(Entity_ptr);
 }
 
+//To avoid Bad LightUserData problems: 
+//push the same number of parameters the function uses
 void Entity_AI_Script_Execute(struct _AI_LL_*AI,void * Overrider_Pointer)
 {
     lua_State * Lua_Script = AI->Lua;
@@ -331,10 +333,11 @@ void Entity_AI_Script_Execute(struct _AI_LL_*AI,void * Overrider_Pointer)
     {
 	if(Overrider_Pointer==NULL)
 	{Overrider_Pointer = AI->Parameter_Pointer;}
+
 	lua_getglobal(Lua_Script,AI->Function);
 	lua_pushlightuserdata(Lua_Script,AI->Caller);
-	lua_pushlightuserdata(Lua_Script,Overrider_Pointer);
-	lua_pcall(Lua_Script,2,0,0);
+	//lua_pushlightuserdata(Lua_Script,Overrider_Pointer);
+	lua_pcall(Lua_Script,1,0,0);
     }
 }
 #endif
