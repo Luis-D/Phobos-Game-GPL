@@ -292,7 +292,7 @@ void Entity_Update(struct _Entities_LL_*Entity_ptr)
 	}
 
 	float Q[4]; float QM[16]; float Ax [3] ={0,0,1.f};
-	AxisAngleToQuaternion(Ax,(M->Direction_Degree+90)*-1.f,Q);
+	AxisAngleToQuaternion(Ax,(M->Direction_Degree+90),Q);
 	QuaternionToMatrix4x4(Q,QM);
 	M4x4MUL(Instance->Matrix,QM,Instance->Matrix);
 

@@ -4,7 +4,7 @@
 #ifndef _PHO_TRIGGERS_H_
 #define _PHO_TRIGGERS_H_
 
-#include "libLDCC/LD_Geometry.h"
+#include "libLDCC/Extern/LD_Geometry.h"
 
 #define FunctionNameSize 8
 

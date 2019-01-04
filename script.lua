@@ -1,86 +1,25 @@
 --[[Testing]]--
 --[[-Luis Delgado. 2018]]--
 
-MaxInstances=10
+MaxInstances=2
 
 VRAM_Instances(MaxInstances+2); -- <-- The floor is an instance too.
 VRAM_Buffers(2);
 
-Character_model =Model_add("Human_Placeholder.iqm");
-Floor_model = Model_add("Lab1.iqm");
+Character_model =Model_add("mono.iqm");
 
-CharaSize = 0.5
+print("LOADED");
 
---[[Load Player]]--
-Model = VRAM_Instance_Create(1,Character_model);
-Jugador = Entity_Create(0,4,0,0,0.1,10,0.25,nil,nil,Model,CharaSize);
+Model = VRAM_Instance_Create(0,Character_model);
+print(Model)
+Jugador = Entity_Create(0,0,0,0,0.1,10,0.25,nil,nil,Model);
 
---[[Load NPCs]]--
-for i=2,MaxInstances do
-    Model = VRAM_Instance_Create(i,Character_model);
-    NPC = Entity_Create(i-1,-2.3+(i*0.05),0,0+i,0.04,5,0.15,Script_This(),"stalk",Model,CharaSize);
-    Entity_Set_Sensor(NPC,90,6)
-end
+print("---");
 
---[[Load World]]--
-Scene_Set_Map("Lab1.stl");
-Scene_Set_Script(Script_This());
-Camera_add(-4,14,3,-4,0,0,60,14);
-Camera_add(9,9,3,6,6,0,60,10);
-Camera_add(1, -12,3,3,0,0,45,16);
-Camera_add(-4, -13,3,-3,0,0,45,16);
+Camera_add(10,10,10,0,0,5,60,1400);
 
-Scene_Trigger_add(2,-3,5,-3,"TP",nil)
-Scene_Trigger_add(-2,0.5,-2,-0.5,"TP2",nil)
+print("---");
 
-VRAM_Instance_Create(0,Floor_model);
+VRAM_Buffer_fill(0,0,0,0);
 
-
-
-
---[[Graphic stuff]]--
-VRAM_Buffer_fill(0,0,0,1);
-VRAM_Buffer_fill(1,1,MaxInstances,0);
-
-
---[[Functions]]--
-
-function stalk (caller)
-    Entity_Path_Clear(caller);
-    v=Entity_Sensor_Check_Entity(caller,Jugador)
-	io.write(Entity_Get_ID(caller) .. ": ");
-	print(v)
-	Speed = 0.2;
-    if(v) then
-	Speed=1
-	end
-    
-	PP = Entity_Get_Position(Jugador);
-	CalP= Entity_Get_Position(caller);
-	DD = V2Distance(PP,CalP);
-	Node=Scene_Find_Node(CalP)   
-	Node2 = Scene_Find_Node(PP);
-	PATH = Path_Find(Node,Node2,0,PP);
-	Entity_Path_Set(caller,PATH);
-	X,Y = Entity_Path_Get_XY(caller);
-	if Entity_Goto_EXT(caller,X,Y,Speed,1) then
-		Entity_Movement(caller,0,0);
-    	end
-    
-end
-
-function TP(Caller,Parameter)
-    ID = Entity_Get_ID(Caller)
-    if ID == 0 then -- <-Check if the caller is the Player
-        Entity_Teleport(Caller,3.5,2,250)
-    end 
-	
-end
-
-function TP2(Caller,Parameter)
-    
-    Entity_Teleport(Caller,-5,-3,0)
-    
-	
-end
-
+print("---");

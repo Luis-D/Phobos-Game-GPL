@@ -8,8 +8,8 @@
 
 #include "Scene.h"
 
-#include "libLDCC/LD_Time.h"
-#include "libLDCC/LD_Math.h"
+#include "libLDCC/Time/LD_Time.h"
+#include "libLDCC/Extern/LD_Math.h"
 #include "Lua_Utils.h"
 #include "Lua_LD_Math.h"
 
@@ -61,7 +61,7 @@ int l_Pho_Model_add(lua_State * L)
       	if(IQM_Load_File(_Model_,lua_tostring(L,1)) ==-1){printf("ERROR::MODEL\n");}
 	LD_Model_Object_Struct * Model = LD_3D_ModelsLinkedList_Append((&_Model_->VertexCount));
 	free(_Model_);
-	lua_pushlightuserdata(L,LD_3D.ModelsLinkedList_Last);
+	lua_pushlightuserdata(L,&LD_3D.Models_LL->Last->Data);
 	return 1;
 }
 
@@ -82,8 +82,8 @@ int l_VRAMBuffers_allocate(lua_State *L)
 int l_VRAM_Instance_Create(lua_State *L)
 {
 	//printf("Model: \n", (LD_Model_Object_Struct*)lua_topointer(L,2));
-	struct LD_ModelsLinkedList_Struct*tmp = (struct LD_ModelsLinkedList_Struct*)lua_topointer(L,2);
-	LD_3D_Fill_Instance(&LD_3D.InstacesBuffer[lua_tointeger(L,1)],(LD_Model_Object_Struct*)&tmp->Model);
+	struct LD_Model_Object_Struct*tmp = (struct LD_Model_Object_Struct*)lua_topointer(L,2);
+	LD_3D_Fill_Instance(&LD_3D.InstacesBuffer[lua_tointeger(L,1)],tmp);
 
 	lua_pushlightuserdata(L,&LD_3D.InstacesBuffer[lua_tointeger(L,1)]);
 	return 1;
@@ -472,7 +472,7 @@ int l_Model_delete_all(lua_State * L)
 
 int l_Model_delete_Stack(lua_State * L)
 {
-	LD_3D_ModelsLinkedList_System_Delete((struct LD_ModelsLinkedList_Struct *)lua_tointeger(L,1));
+	LD_3D_ModelsLinkedList_System_Delete((struct LD_Model_Object_Struct *)lua_tointeger(L,1));
 	return 1;
 }
 

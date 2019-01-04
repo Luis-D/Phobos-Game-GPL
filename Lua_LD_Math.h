@@ -1,7 +1,7 @@
 #ifndef _LUA_LD_MATH_H
 #define _LUA_LD_MATH_H
 
-#include "libLDCC/LD_Math.h"
+#include "libLDCC/Extern/LD_Math.h"
 
 int l_V2Distance(lua_State *L)
 {

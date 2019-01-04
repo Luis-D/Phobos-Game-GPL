@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "libLDCC/LD_Time.h"
+#include "libLDCC/Time/LD_Time.h"
 #include "libLDCC/LD_Read.h"
-#include "libLDCC/LD_IQM.h"
+#include "libLDCC/IQM/LD_IQM.h"
 
 #ifdef _WIN2
     #include <windows.h>
@@ -18,7 +18,7 @@
 
 #include "libLDCC/GL/OES2/OES_DDS.h"
 #include "libLDCC/GL/GL_SHADERS.h"
-#include "libLDCC/GL/OES2/LD_Def_Lighting_OES.h"
+#include "libLDCC/GL/OES2/LD_3D_OES.h"
 
 #include "Collision.h"
 #include "AI.h"
@@ -31,7 +31,7 @@ int main(void)
     float Aspect;
 
     glfwInit();
-    GLFW_Context_Struct Context_State = Context_State_Create (640,480,0,60,0,"Tech Demo. Luis Delgado. December,18, 2018.",4);
+    GLFW_Context_Struct Context_State = Context_State_Create (640,480,0,60,0,"Tech Demo. Luis Delgado. December,19, 2018.",4);
     GLFWwindow* window = GLFW_Create_Window(&Context_State);
 
     Aspect = (Context_State.Width*1.f)/(Context_State.Height*1.f);
@@ -64,7 +64,19 @@ int main(void)
     Lua_Execute(L,"script.lua");
 
     printf("Script done.\n");
-  
+ 
+    IQM_RAW_Struct  IQM_Anim;
+
+    IQM_Load_File(&IQM_Anim,"mono_anim.iqm");
+
+   LD_Animation_Object_Struct * Ani = LD_3D_AnimationsLinkedList_Append(&IQM_Anim.PosesCount);  
+
+   // printf("PC:%d | %d\n",Ani->FramesCount,IQM_Anim.FramesCount);
+
+    
+    LD_3D_Instance_Set_Animation(LD_3D.InstacesBuffer+0,Ani,0,0.1f);
+    LD_3D.InstacesBuffer[0].Animation.CurrentFrame=0;
+    LD_3D.InstacesBuffer[0].Animation.FLAG=2 | 8 ;
 /*
     Path_2D_struct * Path = Navi_Map_2D_FindPath(&Pho_Scene.NaviMap.Node_Array[0],&Pho_Scene.NaviMap.Node_Array[1],0);
     
@@ -82,7 +94,10 @@ explorer = Path->First;
     while(explorer != NULL)
     {
 	printf("->%lx\n",explorer->Node);
-	explorer=explorer->Next;
+	explorer=explorer->Next;Iexp->Animation.CurrentFrame+=
+                    (Iexp->Animation.Data->Animations[Iexp->Animation.CurrentAnimation].framerate
+                    /BASE_FPS * Delta)
+                    *Iexp->Animation.Speed;
     }
   */
     struct Chara * player = &Entities_Sys.Entities_LL_First->Entity;
@@ -97,15 +112,17 @@ explorer = Path->First;
 	Mov->Direction_Degree = lua_tonumber(L,4);
 */
 
+
     float * Delta_Time = Delta_time_init(MAX_FPS);
     printf("Loop\n");
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
     while(!glfwWindowShouldClose(window))
     {
-        Delta_time_Frame_Start();
+       Delta_time_Frame_Start();
 
-	//printf("%f\n",*Delta_Time);
-	
-	float F=0,T=0;
+
+
+	    float F=0,T=0;
         if(glfwGetKey(window, GLFW_KEY_LEFT))
         {T=1.f;}
         if(glfwGetKey(window, GLFW_KEY_RIGHT))
@@ -114,10 +131,7 @@ explorer = Path->First;
         {F=1.f;}
         if(glfwGetKey(window, GLFW_KEY_DOWN))
         {F=-1.f;}
-	Entity_Movement((struct _Entities_LL_*)player,F,T);
-	
-	
-
+	    Entity_Movement((struct _Entities_LL_*)player,F,T);
 
 	Characters_AI_Update();
 	
@@ -128,7 +142,8 @@ explorer = Path->First;
         Pho_Camera_Update(player->Movement.HitBox->AABB.Center_Position[0],player->Movement.HitBox->AABB.Center_Position[1]);
 
 
-	LD_3D_Update();
+	LD_3D_Update(*Delta_Time,BASEFPS);
+
         glClearColor(1.f,0.f,1.f,1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -150,5 +165,6 @@ explorer = Path->First;
 
     return 1;
 }
+
 
 
