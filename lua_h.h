@@ -68,7 +68,7 @@ int l_Pho_Model_add(lua_State * L)
 int l_InstanceBuffer_Set_Capacity(lua_State *L)
 {
 	printf("VRAM Instances: %ld\n",lua_tointeger(L,1));
-	LD_3D_InstaceBuffer_Set_capacity(lua_tointeger(L,1));
+	LD_3D_InstanceBuffer_Set_capacity(lua_tointeger(L,1));
 	return 1;
 }
 
@@ -83,16 +83,16 @@ int l_VRAM_Instance_Create(lua_State *L)
 {
 	//printf("Model: \n", (LD_Model_Object_Struct*)lua_topointer(L,2));
 	struct LD_Model_Object_Struct*tmp = (struct LD_Model_Object_Struct*)lua_topointer(L,2);
-	LD_3D_Fill_Instance(&LD_3D.InstacesBuffer[lua_tointeger(L,1)],tmp);
+	LD_3D_Fill_Instance(&LD_3D.InstancesBuffer[lua_tointeger(L,1)],tmp);
 
-	lua_pushlightuserdata(L,&LD_3D.InstacesBuffer[lua_tointeger(L,1)]);
+	lua_pushlightuserdata(L,&LD_3D.InstancesBuffer[lua_tointeger(L,1)]);
 	return 1;
 }
 
 int l_Fill_VRAM_Buffer(lua_State *L)
 {
-	LD_3D_Fill_VRAMBuffer(&LD_3D.VRAMBuffer[lua_tointeger(L,1)],&LD_3D.InstacesBuffer[lua_tointeger(L,2)],
-		&LD_3D.InstacesBuffer[lua_tointeger(L,3)],lua_tointeger(L,4));
+	LD_3D_Fill_VRAMBuffer(&LD_3D.VRAMBuffer[lua_tointeger(L,1)],&LD_3D.InstancesBuffer[lua_tointeger(L,2)],
+		&LD_3D.InstancesBuffer[lua_tointeger(L,3)],lua_tointeger(L,4));
 	return 1;
 }
 

@@ -67,16 +67,17 @@ int main(void)
  
     IQM_RAW_Struct  IQM_Anim;
 
-    IQM_Load_File(&IQM_Anim,"mono_anim.iqm");
+    IQM_Load_File(&IQM_Anim,"body_Walk.iqm");
 
    LD_Animation_Object_Struct * Ani = LD_3D_AnimationsLinkedList_Append(&IQM_Anim.PosesCount);  
 
    // printf("PC:%d | %d\n",Ani->FramesCount,IQM_Anim.FramesCount);
 
+    LD_3D_Instance_Set_Animations_Array(LD_3D.InstancesBuffer+0,1);
+    LD_3D_Instance_Set_Animation(LD_3D.InstancesBuffer+0,0,Ani,0,1.f);
+    //LD_3D.InstacesBuffer[0].Animation.CurrentFrame=0;
+    *LD_3D_Instance_Animation_Flag(LD_3D.InstancesBuffer+0,0) |= 2 | 8;
     
-    LD_3D_Instance_Set_Animation(LD_3D.InstacesBuffer+0,Ani,0,0.1f);
-    LD_3D.InstacesBuffer[0].Animation.CurrentFrame=0;
-    LD_3D.InstacesBuffer[0].Animation.FLAG=2 | 8 ;
 /*
     Path_2D_struct * Path = Navi_Map_2D_FindPath(&Pho_Scene.NaviMap.Node_Array[0],&Pho_Scene.NaviMap.Node_Array[1],0);
     
@@ -118,11 +119,10 @@ explorer = Path->First;
     glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
     while(!glfwWindowShouldClose(window))
     {
-       Delta_time_Frame_Start();
-
-
+        Delta_time_Frame_Start();
 
 	    float F=0,T=0;
+        *LD_3D_Instance_Animation_Flag(LD_3D.InstancesBuffer+0,0) &=~1;
         if(glfwGetKey(window, GLFW_KEY_LEFT))
         {T=1.f;}
         if(glfwGetKey(window, GLFW_KEY_RIGHT))
@@ -131,18 +131,29 @@ explorer = Path->First;
         {F=1.f;}
         if(glfwGetKey(window, GLFW_KEY_DOWN))
         {F=-1.f;}
+        //printf("F:%f | ",F);
+        if(F!=0 || T!=0)
+        {
+            char AFLAG = *LD_3D_Instance_Animation_Flag(LD_3D.InstancesBuffer+0,0)|1;
+            if(F<0){AFLAG|=4;}
+            else
+            {
+                AFLAG&=~4;
+            }
+
+            *LD_3D_Instance_Animation_Flag(LD_3D.InstancesBuffer+0,0)=AFLAG;   
+        }
 	    Entity_Movement((struct _Entities_LL_*)player,F,T);
 
-	Characters_AI_Update();
-	
-	Collisions_Update();
+        Characters_AI_Update();
+        
+        Collisions_Update();
 
-	Entity_pos_Update_All(); //<- This updates the Entities after the computations
+        Entity_pos_Update_All(); //<- This updates the Entities after the computations
 
         Pho_Camera_Update(player->Movement.HitBox->AABB.Center_Position[0],player->Movement.HitBox->AABB.Center_Position[1]);
 
-
-	LD_3D_Update(*Delta_Time,BASEFPS);
+        LD_3D_Update(*Delta_Time,BASEFPS);
 
         glClearColor(1.f,0.f,1.f,1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

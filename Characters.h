@@ -281,20 +281,20 @@ void Entity_Update(struct _Entities_LL_*Entity_ptr)
     
     if(Instance != NULL)
     {
-	memcpy(Instance->Matrix,Identity_Matrix_4x4,4*16);
+	memcpy(Instance->Model.Matrix,Identity_Matrix_4x4,4*16);
 	float Scale = Entity_ptr->Entity.Instance_Scale;
 	
 	if(Scale != 1.0)
 	{
-	    Instance->Matrix[0] *=Scale;
-	    Instance->Matrix[5] *=Scale;
-	    Instance->Matrix[10] *=Scale;
+	    Instance->Model.Matrix[0] *=Scale;
+	    Instance->Model.Matrix[5] *=Scale;
+	    Instance->Model.Matrix[10] *=Scale;
 	}
 
 	float Q[4]; float QM[16]; float Ax [3] ={0,0,1.f};
 	AxisAngleToQuaternion(Ax,(M->Direction_Degree+90),Q);
 	QuaternionToMatrix4x4(Q,QM);
-	M4x4MUL(Instance->Matrix,QM,Instance->Matrix);
+	M4x4MUL(Instance->Model.Matrix,QM,Instance->Model.Matrix);
 
     }
 }
@@ -308,7 +308,7 @@ void Entity_pos_Update_All()
 	struct LD_Instance_Struct *  Instance = Entity->Entity.VRAM_Instace;
 	if(Instance != NULL)
         {
-            memcpy(&Instance->Matrix[12],Entity->Entity.Movement.HitBox->AABB.Center_Position,8);
+            memcpy(&Instance->Model.Matrix[12],Entity->Entity.Movement.HitBox->AABB.Center_Position,8);
         }
 	
 	Entity = Entity->Next;
