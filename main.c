@@ -36,6 +36,8 @@ int main(void)
 
     Aspect = (Context_State.Width*1.f)/(Context_State.Height*1.f);
 
+    LD_GLFW_Keyboard_Init(window);
+
     GL_Extensions_Init();
 
     glEnable(GL_DEPTH_TEST);
@@ -65,18 +67,19 @@ int main(void)
 
     printf("Script done.\n");
  
-    IQM_RAW_Struct  IQM_Anim;
+    //IQM_RAW_Struct  IQM_Anim;
 
-    IQM_Load_File(&IQM_Anim,"body_Walk.iqm");
+    //IQM_Load_File(&IQM_Anim,"body_Walk.iqm");
 
-   LD_Animation_Object_Struct * Ani = LD_3D_AnimationsLinkedList_Append(&IQM_Anim.PosesCount);  
-
+   //LD_Animation_Object_Struct * Ani = LD_3D_AnimationsLinkedList_Append(&IQM_Anim.PosesCount);  
+//LD_Animation_Object_Struct * Ani = LD_3D.Animations_LL->Last->Data;
+//printf("Ani: ->%p\n",Ani);
    // printf("PC:%d | %d\n",Ani->FramesCount,IQM_Anim.FramesCount);
 
-    LD_3D_Instance_Set_Animations_Array(LD_3D.InstancesBuffer+0,1);
-    LD_3D_Instance_Set_Animation(LD_3D.InstancesBuffer+0,0,Ani,0,1.f);
+    //LD_3D_Instance_Set_Animations_Array(LD_3D.InstancesBuffer+0,1);
+    //LD_3D_Instance_Set_Animation(LD_3D.InstancesBuffer+0,0,Ani,0,1.f);
     //LD_3D.InstacesBuffer[0].Animation.CurrentFrame=0;
-    *LD_3D_Instance_Animation_Flag(LD_3D.InstancesBuffer+0,0) |= 2 | 8;
+    //*LD_3D_Instance_Animation_Flag(LD_3D.InstancesBuffer+0,0) |= 2;
     
 /*
     Path_2D_struct * Path = Navi_Map_2D_FindPath(&Pho_Scene.NaviMap.Node_Array[0],&Pho_Scene.NaviMap.Node_Array[1],0);
@@ -121,8 +124,9 @@ explorer = Path->First;
     {
         Delta_time_Frame_Start();
 
+/*
 	    float F=0,T=0;
-        *LD_3D_Instance_Animation_Flag(LD_3D.InstancesBuffer+0,0) &=~1;
+        //*LD_3D_Instance_Animation_Flag(LD_3D.InstancesBuffer+0,0) &=~1;
         if(glfwGetKey(window, GLFW_KEY_LEFT))
         {T=1.f;}
         if(glfwGetKey(window, GLFW_KEY_RIGHT))
@@ -134,7 +138,7 @@ explorer = Path->First;
         //printf("F:%f | ",F);
         if(F!=0 || T!=0)
         {
-            char AFLAG = *LD_3D_Instance_Animation_Flag(LD_3D.InstancesBuffer+0,0)|1;
+            char AFLAG = *LD_3D_Instance_Animation_Flag(LD_3D.InstancesBuffer+0,0);
             if(F<0){AFLAG|=4;}
             else
             {
@@ -144,7 +148,7 @@ explorer = Path->First;
             *LD_3D_Instance_Animation_Flag(LD_3D.InstancesBuffer+0,0)=AFLAG;   
         }
 	    Entity_Movement((struct _Entities_LL_*)player,F,T);
-
+*/
         Characters_AI_Update();
         
         Collisions_Update();
